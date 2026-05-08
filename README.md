@@ -17,3 +17,20 @@ Na Vercel aplikacja wymaga trwałego Redis REST storage. Najprostsza konfiguracj
 Po ustawieniu Redis dane graczy są zapisywane pod kluczami `knowbetter:player:<imię>` i przetrwają restarty funkcji oraz nowe releasy. Zmienna `KNOWBETTER_STORAGE_PREFIX` pozwala rozdzielić środowiska, np. `knowbetter-prod` i `knowbetter-preview`.
 
 Bez Redis na Vercel aplikacja celowo zgłosi błąd, żeby nie udawać trwałego zapisu na nietrwałym filesystemie.
+
+## Panel admina
+
+Panel jest dostępny pod `/admin`.
+
+Domyślne dane logowania:
+
+- login: `admin`
+- hasło: `admin30`
+
+Opcjonalnie można je nadpisać zmiennymi:
+
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+- `ADMIN_SESSION_SECRET`
+
+Panel pokazuje graczy posortowanych po postępie i pozwala wyczyścić zapisane odpowiedzi dla jednej osoby albo dla wszystkich graczy naraz.

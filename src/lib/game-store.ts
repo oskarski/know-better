@@ -7,7 +7,7 @@ import path from "node:path";
 import { getPublicQuestions, getQuestionById, getQuestions } from "@/lib/questions";
 import { normalizeAnswer } from "@/lib/normalization";
 import { calculateLotteryTickets, calculateScore } from "@/lib/scoring";
-import type { GameSnapshot, QuestionStatus, QuestionView } from "@/lib/types";
+import type { AdminPlayerView, GameSnapshot, QuestionStatus, QuestionView } from "@/lib/types";
 
 export const SESSION_COOKIE = "knowbetter_player_id";
 
@@ -112,6 +112,41 @@ async function redisGetPlayer(playerId: string) {
 
 async function redisSavePlayer(player: StoredPlayer) {
   await redisCommand<"OK">(["SET", redisPlayerKey(player.id), JSON.stringify(player)]);
+}
+
+async function redisPlayerKeys() {
+  const keys: string[] = [];
+  let cursor = "0";
+
+  do {
+    const result = await redisCommand<[string, string[]]>([
+      "SCAN",
+      cursor,
+      "MATCH",
+      `${storagePrefix()}:player:*`,
+      "COUNT",
+      100,
+    ]);
+
+    cursor = String(result[0]);
+    keys.push(...result[1]);
+  } while (cursor !== "0");
+
+  return keys;
+}
+
+async function redisGetAllPlayers() {
+  const keys = await redisPlayerKeys();
+
+  if (keys.length === 0) {
+    return [];
+  }
+
+  const rawPlayers = await redisCommand<(string | null)[]>(["MGET", ...keys]);
+
+  return rawPlayers
+    .filter((rawPlayer): rawPlayer is string => Boolean(rawPlayer))
+    .map((rawPlayer) => JSON.parse(rawPlayer) as StoredPlayer);
 }
 
 async function ensureStoreFile() {
@@ -297,6 +332,66 @@ function makeSnapshot(player: StoredPlayer): GameSnapshot {
   };
 }
 
+function makeAdminPlayerView(player: StoredPlayer): AdminPlayerView {
+  const answers = Object.values(player.answers);
+  const score = calculateScore(player.answers);
+  const correctCount = answers.filter((answer) => answer.status === "correct").length;
+  const hintCount = answers.filter((answer) => answer.hintUsed).length;
+  const totalQuestions = getQuestions().length;
+
+  return {
+    id: player.id,
+    username: player.username,
+    score,
+    lotteryTickets: calculateLotteryTickets(score),
+    progressPercent: Math.min(100, Math.round((score / 18) * 100)),
+    answeredCount: answers.filter((answer) => answer.status !== "unanswered").length,
+    correctCount,
+    incorrectCount: answers.filter((answer) => answer.status === "incorrect").length,
+    hintCount,
+    totalQuestions,
+    createdAt: player.createdAt,
+    updatedAt: player.updatedAt,
+  };
+}
+
+function sortAdminPlayers(players: AdminPlayerView[]) {
+  return players.sort((first, second) => {
+    if (second.score !== first.score) {
+      return second.score - first.score;
+    }
+
+    if (second.correctCount !== first.correctCount) {
+      return second.correctCount - first.correctCount;
+    }
+
+    const updatedDifference = Date.parse(second.updatedAt) - Date.parse(first.updatedAt);
+
+    if (updatedDifference !== 0) {
+      return updatedDifference;
+    }
+
+    return first.username.localeCompare(second.username, "pl");
+  });
+}
+
+function uniquePlayersByName(players: StoredPlayer[]) {
+  const groups = new Map<string, StoredPlayer[]>();
+
+  for (const player of players) {
+    const key = usernameKey(player.username);
+    groups.set(key, [...(groups.get(key) ?? []), player]);
+  }
+
+  return Array.from(groups.values()).map(choosePrimaryPlayer);
+}
+
+function resetPlayerProgress(player: StoredPlayer) {
+  player.answers = {};
+  player.updatedAt = now();
+  return player;
+}
+
 function applySubmittedAnswer(player: StoredPlayer, questionId: number, answer: string) {
   const question = getQuestionById(questionId);
 
@@ -403,6 +498,33 @@ async function redisRevealHint(playerId: string, questionId: number) {
   return makeSnapshot(player);
 }
 
+async function redisListAdminPlayers() {
+  const players = await redisGetAllPlayers();
+  return sortAdminPlayers(uniquePlayersByName(players).map(makeAdminPlayerView));
+}
+
+async function redisClearPlayerState(playerId: string) {
+  const player = await redisGetPlayer(playerId);
+
+  if (!player) {
+    throw new Error("Nie znaleziono gracza.");
+  }
+
+  resetPlayerProgress(player);
+  await redisSavePlayer(player);
+}
+
+async function redisClearAllPlayerStates() {
+  const players = await redisGetAllPlayers();
+
+  await Promise.all(
+    players.map(async (player) => {
+      resetPlayerProgress(player);
+      await redisSavePlayer(player);
+    }),
+  );
+}
+
 export async function findOrCreatePlayer(username: string) {
   if (getRedisConfig()) {
     return redisFindOrCreatePlayer(username);
@@ -493,5 +615,49 @@ export async function revealHint(playerId: string, questionId: number) {
 
     const syncedPlayer = syncPlayersWithSameName(store, player.username) ?? player;
     return makeSnapshot(syncedPlayer);
+  });
+}
+
+export async function listAdminPlayers() {
+  if (getRedisConfig()) {
+    return redisListAdminPlayers();
+  }
+
+  return updateStore((store) => {
+    for (const player of Object.values(store.players)) {
+      syncPlayersWithSameName(store, player.username);
+    }
+
+    return sortAdminPlayers(uniquePlayersByName(Object.values(store.players)).map(makeAdminPlayerView));
+  });
+}
+
+export async function clearPlayerState(playerId: string) {
+  if (getRedisConfig()) {
+    return redisClearPlayerState(playerId);
+  }
+
+  return updateStore((store) => {
+    const player = store.players[playerId];
+
+    if (!player) {
+      throw new Error("Nie znaleziono gracza.");
+    }
+
+    for (const matchingPlayer of playersWithSameName(store, player.username)) {
+      resetPlayerProgress(matchingPlayer);
+    }
+  });
+}
+
+export async function clearAllPlayerStates() {
+  if (getRedisConfig()) {
+    return redisClearAllPlayerStates();
+  }
+
+  return updateStore((store) => {
+    for (const player of Object.values(store.players)) {
+      resetPlayerProgress(player);
+    }
   });
 }

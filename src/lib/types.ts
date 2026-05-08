@@ -34,6 +34,21 @@ export type GameSnapshot = {
   totalQuestions: number;
 };
 
+export type AdminPlayerView = {
+  id: string;
+  username: string;
+  score: number;
+  lotteryTickets: number;
+  progressPercent: number;
+  answeredCount: number;
+  correctCount: number;
+  incorrectCount: number;
+  hintCount: number;
+  totalQuestions: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type GameActionResult =
   | {
       ok: true;

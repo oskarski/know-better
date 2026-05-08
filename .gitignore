@@ -9,3 +9,4 @@ dist
 !.env.example
 tsconfig.tsbuildinfo
 data/game-state.json
+.vercel

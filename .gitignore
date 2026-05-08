@@ -10,3 +10,4 @@ dist
 tsconfig.tsbuildinfo
 data/game-state.json
 .vercel
+.env*.local

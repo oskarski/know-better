@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "difficulty": "easy",
+    "question": "Jak ma na imię solenizant?",
+    "answer": "Oskar",
+    "hint": "To imię pojawia się dziś częściej niż zwykle."
+  },
+  {
+    "id": 2,
+    "difficulty": "easy",
+    "question": "Które urodziny dziś świętujemy?",
+    "answer": "30",
+    "hint": "To okrągła rocznica, którą trudno pomylić."
+  },
+  {
+    "id": 3,
+    "difficulty": "easy",
+    "question": "Jaki napój najczęściej ratuje poranek solenizanta?",
+    "answer": "kawa",
+    "hint": "Czarny klasyk, zwykle w kubku."
+  },
+  {
+    "id": 4,
+    "difficulty": "easy",
+    "question": "Co solenizant wybierze szybciej: pizzę czy sushi?",
+    "answer": "pizza",
+    "hint": "Okrągła odpowiedź z serem."
+  },
+  {
+    "id": 5,
+    "difficulty": "easy",
+    "question": "Woli góry czy morze?",
+    "answer": "góry",
+    "hint": "Tam, gdzie łatwiej o widok po wysiłku."
+  },
+  {
+    "id": 6,
+    "difficulty": "medium",
+    "question": "Jakie miasto solenizant najczęściej nazywa swoim?",
+    "answer": "Warszawa",
+    "hint": "Stolica jest dobrym tropem."
+  },
+  {
+    "id": 7,
+    "difficulty": "medium",
+    "question": "Jaki kolor najczęściej pojawia się w garderobie solenizanta?",
+    "answer": "czarny",
+    "hint": "Pasuje prawie do wszystkiego."
+  },
+  {
+    "id": 8,
+    "difficulty": "medium",
+    "question": "Jaki typ muzyki najłatwiej rozkręca solenizanta?",
+    "answer": "elektronika",
+    "hint": "Dużo bitu, mało przypadkowych gitar."
+  },
+  {
+    "id": 9,
+    "difficulty": "medium",
+    "question": "Jaki deser solenizant wybierze bez długiego namysłu?",
+    "answer": "sernik",
+    "hint": "Klasyk z twarogiem."
+  },
+  {
+    "id": 10,
+    "difficulty": "medium",
+    "question": "Czy solenizant jest bardziej rannym ptaszkiem czy nocnym markiem?",
+    "answer": "nocny marek",
+    "hint": "Najlepsze pomysły przychodzą późno."
+  },
+  {
+    "id": 11,
+    "difficulty": "medium",
+    "question": "Jaka aplikacja najczęściej pożera mu czas?",
+    "answer": "YouTube",
+    "hint": "Jeden film prowadzi do kolejnych pięciu."
+  },
+  {
+    "id": 12,
+    "difficulty": "medium",
+    "question": "Jaki sport najchętniej ogląda?",
+    "answer": "piłka nożna",
+    "hint": "Dwie bramki, jedna piłka."
+  },
+  {
+    "id": 13,
+    "difficulty": "medium",
+    "question": "Jaki smak lodów wybiera najczęściej?",
+    "answer": "pistacjowe",
+    "hint": "Zielony smak, ale nie miętowy."
+  },
+  {
+    "id": 14,
+    "difficulty": "medium",
+    "question": "Co prędzej wybierze na wolny wieczór: planszówki czy klub?",
+    "answer": "planszówki",
+    "hint": "Stół, zasady i trochę negocjacji."
+  },
+  {
+    "id": 15,
+    "difficulty": "medium",
+    "question": "Jaki kierunek podróży ma wysoko na liście marzeń?",
+    "answer": "Japonia",
+    "hint": "Kraj sushi, pociągów i neonów."
+  },
+  {
+    "id": 16,
+    "difficulty": "hard",
+    "question": "Jaki był pierwszy koncert, na którym był solenizant?",
+    "answer": "Myslovitz",
+    "hint": "Polski zespół z nostalgicznych playlist."
+  },
+  {
+    "id": 17,
+    "difficulty": "hard",
+    "question": "Jakiego słowa solenizant nadużywa, gdy coś mu się podoba?",
+    "answer": "sztos",
+    "hint": "Krótko, entuzjastycznie i trochę po miejsku."
+  },
+  {
+    "id": 18,
+    "difficulty": "hard",
+    "question": "Jaką potrawę solenizant próbował kiedyś ugotować i prawie przypalił?",
+    "answer": "risotto",
+    "hint": "Ryż, mieszanie i dużo cierpliwości."
+  },
+  {
+    "id": 19,
+    "difficulty": "hard",
+    "question": "Jaki film solenizant może cytować z pamięci?",
+    "answer": "Forrest Gump",
+    "hint": "Bieganie, ławka i pudełko czekoladek."
+  },
+  {
+    "id": 20,
+    "difficulty": "hard",
+    "question": "Jaka była jego pierwsza wymarzona praca z dzieciństwa?",
+    "answer": "astronauta",
+    "hint": "Daleko od biurka, bardzo wysoko nad Ziemią."
+  }
+]

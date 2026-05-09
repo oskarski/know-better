@@ -29,6 +29,8 @@ type StoredAnswer = {
   hintRevealedAt?: string;
 };
 
+type AnswerSubmitOutcome = "correct" | "incorrect" | "already-correct";
+
 type StoredPlayer = {
   id: string;
   username: string;
@@ -595,7 +597,11 @@ function chooseNextWinner(meta: StoredGameMeta) {
   return winner;
 }
 
-function applySubmittedAnswer(player: StoredPlayer, questionId: number, answer: string) {
+function applySubmittedAnswer(
+  player: StoredPlayer,
+  questionId: number,
+  answer: string,
+): AnswerSubmitOutcome {
   const question = getQuestionById(questionId);
 
   if (!question) {
@@ -606,7 +612,7 @@ function applySubmittedAnswer(player: StoredPlayer, questionId: number, answer: 
   const existingAnswer = player.answers[key];
 
   if (existingAnswer?.status === "correct") {
-    return;
+    return "already-correct";
   }
 
   const normalizedUserAnswer = normalizeAnswer(answer);
@@ -624,6 +630,7 @@ function applySubmittedAnswer(player: StoredPlayer, questionId: number, answer: 
     checkedAt: now(),
   };
   player.updatedAt = now();
+  return status;
 }
 
 function applyHintUsage(player: StoredPlayer, questionId: number) {
@@ -685,9 +692,12 @@ async function redisSubmitAnswer(playerId: string, questionId: number, answer: s
   }
 
   ensureGameIsOpen(meta);
-  applySubmittedAnswer(player, questionId, answer);
+  const outcome = applySubmittedAnswer(player, questionId, answer);
   await redisSavePlayer(player);
-  return makeSnapshot(player, meta);
+  return {
+    outcome,
+    snapshot: makeSnapshot(player, meta),
+  };
 }
 
 async function redisRevealHint(playerId: string, questionId: number) {
@@ -842,10 +852,13 @@ export async function submitAnswer(playerId: string, questionId: number, answer:
     ensureGameIsOpen(meta);
     const player = syncPlayersWithSameName(store, sessionPlayer.username) ?? sessionPlayer;
 
-    applySubmittedAnswer(player, questionId, answer);
+    const outcome = applySubmittedAnswer(player, questionId, answer);
 
     const syncedPlayer = syncPlayersWithSameName(store, player.username) ?? player;
-    return makeSnapshot(syncedPlayer, meta);
+    return {
+      outcome,
+      snapshot: makeSnapshot(syncedPlayer, meta),
+    };
   });
 }
 

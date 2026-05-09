@@ -93,6 +93,7 @@ export type GameActionResult =
       ok: true;
       message: string;
       snapshot: GameSnapshot;
+      outcome?: "correct" | "incorrect" | "already-correct";
     }
   | {
       ok: false;

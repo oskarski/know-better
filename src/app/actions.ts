@@ -44,14 +44,21 @@ export async function submitAnswerAction(
   }
 
   try {
-    const snapshot = await submitAnswer(playerId, questionId, answer);
+    const result = await submitAnswer(playerId, questionId, answer);
+    const { outcome, snapshot } = result;
     const question = snapshot.questions.find((item) => item.id === questionId);
     const isCorrect = question?.status === "correct";
 
     return {
       ok: true,
-      message: isCorrect ? "Dobrze! Punkt zapisany." : "Jeszcze nie. Popytaj dalej.",
+      message:
+        outcome === "already-correct"
+          ? "To pytanie zostało już zaliczone na innym urządzeniu. Pokazuję aktualny stan."
+          : isCorrect
+            ? "Dobrze! Punkt zapisany."
+            : "Jeszcze nie. Popytaj dalej.",
       snapshot,
+      outcome,
     };
   } catch (error) {
     return {

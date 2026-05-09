@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,6 +23,7 @@ function valuesFromSnapshot(game: GameSnapshot) {
 }
 
 export function GameShell({ initialGame }: GameShellProps) {
+  const router = useRouter();
   const [game, setGame] = useState(initialGame);
   const [values, setValues] = useState<Record<number, string>>(() => valuesFromSnapshot(initialGame));
   const [busyQuestionId, setBusyQuestionId] = useState<number | null>(null);
@@ -51,28 +53,39 @@ export function GameShell({ initialGame }: GameShellProps) {
     }
 
     setBusyQuestionId(questionId);
-    const previousTickets = game.lotteryTickets;
-    const result = await submitAnswerAction(questionId, values[questionId] ?? "");
-    setBusyQuestionId(null);
+    try {
+      const previousTickets = game.lotteryTickets;
+      const result = await submitAnswerAction(questionId, values[questionId] ?? "");
 
-    if (!result.ok) {
-      toast.error(result.message);
-      return;
-    }
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
 
-    const checkedQuestion = result.snapshot.questions.find((question) => question.id === questionId);
-    setGame(result.snapshot);
+      const checkedQuestion = result.snapshot.questions.find((question) => question.id === questionId);
+      setGame(result.snapshot);
 
-    if (result.snapshot.lotteryTickets > previousTickets) {
-      setConfettiRun((current) => current + 1);
-      toast.success(`Masz nowy los! Teraz: ${result.snapshot.lotteryTickets}.`);
-      return;
-    }
+      if (result.snapshot.lotteryTickets > previousTickets) {
+        setConfettiRun((current) => current + 1);
+        toast.success(`Masz nowy los! Teraz: ${result.snapshot.lotteryTickets}.`);
+        return;
+      }
 
-    if (checkedQuestion?.status === "correct") {
-      toast.success(result.message);
-    } else {
-      toast.info(result.message);
+      if (result.outcome === "already-correct") {
+        toast.success(result.message);
+        return;
+      }
+
+      if (checkedQuestion?.status === "correct") {
+        toast.success(result.message);
+      } else {
+        toast.info(result.message);
+      }
+    } catch {
+      toast.error("Nie udało się zsynchronizować odpowiedzi. Odśwież stronę i spróbuj ponownie.");
+      router.refresh();
+    } finally {
+      setBusyQuestionId(null);
     }
   }
 
@@ -90,16 +103,22 @@ export function GameShell({ initialGame }: GameShellProps) {
     const questionId = hintQuestionId;
     setHintQuestionId(null);
     setBusyQuestionId(questionId);
-    const result = await revealHintAction(questionId);
-    setBusyQuestionId(null);
+    try {
+      const result = await revealHintAction(questionId);
 
-    if (!result.ok) {
-      toast.error(result.message);
-      return;
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+
+      setGame(result.snapshot);
+      toast.info(result.message);
+    } catch {
+      toast.error("Nie udało się zsynchronizować podpowiedzi. Odśwież stronę i spróbuj ponownie.");
+      router.refresh();
+    } finally {
+      setBusyQuestionId(null);
     }
-
-    setGame(result.snapshot);
-    toast.info(result.message);
   }
 
   return (

@@ -46,7 +46,7 @@ export function GameShell({ initialGame }: GameShellProps) {
 
   async function checkAnswer(questionId: number) {
     if (isGameClosed) {
-      toast.info("Gra jest zakończona. Odpowiedzi nie są już przyjmowane.");
+      toast.info("Gra jest zamknięta. Odśwież stronę, żeby zobaczyć końcowy stan.");
       return;
     }
 
@@ -83,7 +83,7 @@ export function GameShell({ initialGame }: GameShellProps) {
 
     if (isGameClosed) {
       setHintQuestionId(null);
-      toast.info("Gra jest zakończona. Podpowiedzi nie są już dostępne.");
+      toast.info("Gra jest zamknięta. Odśwież stronę, żeby zobaczyć końcowy stan.");
       return;
     }
 
@@ -124,7 +124,8 @@ export function GameShell({ initialGame }: GameShellProps) {
               <div>
                 <p className="font-semibold text-foreground">Gra została zakończona.</p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  Wyniki są zapisane, a prowadzący może teraz przejść do finałowego losowania.
+                  Twoje odpowiedzi zostały zapisane. Wszystkie podpowiedzi są już widoczne, a
+                  prowadzący może teraz przejść do finałowego losowania.
                 </p>
               </div>
             </div>

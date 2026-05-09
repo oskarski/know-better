@@ -231,7 +231,7 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
   function clearAllPlayers() {
     if (
       !window.confirm(
-        "Wyczyścić stan gry dla wszystkich? Odpowiedzi, podpowiedzi, punkty i dotychczasowe losowanie wrócą do zera.",
+        "Wyczyścić stan całej gry? Odpowiedzi, podpowiedzi, punkty, losowanie i lista graczy zostaną usunięte.",
       )
     ) {
       return;
@@ -244,7 +244,7 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
   function closeGame() {
     if (
       !window.confirm(
-        "Zamknąć grę i wyczyścić wszystkich graczy? Zachowamy tylko pulę losów do finałowego losowania.",
+        "Zamknąć grę? Zachowamy obecny stan graczy, zablokujemy dalsze odpowiedzi i zamrozimy pulę losów do finałowego losowania.",
       )
     ) {
       return;
@@ -467,8 +467,8 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
               <>
                 <p className="font-semibold">Gra została zamknięta.</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Aktywna lista graczy została wyczyszczona. Finałowe losowanie
-                  korzysta teraz z zapisanej puli losów.
+                  Nie ma zapisanych graczy, ale finałowe losowanie nadal może
+                  korzystać z wcześniej zamrożonej puli losów.
                 </p>
               </>
             ) : (

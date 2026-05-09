@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import {
   ArrowRight,
+  BadgeAlert,
   MessageCircleMore,
   Sparkles,
   Ticket,
@@ -58,10 +59,11 @@ export function LoginForm() {
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               KnowBetter to luźna gra imprezowa, która dzieje się między
-              rozmowami. Celem jest poznanie innych gości i przy okazji mnie:
-              przez historie, wspomnienia i drobne tropy, które pojawiają się w
-              trakcie imprezy. Na koniec gry odbędzie się losowanie, w którym
-              wylosujemy 3 zwycięzców i pojawią się nagrody.
+              rozmowami. W grze czekają na Was pytania, a odpowiedzi szuka się
+              wśród osób na imprezie. Celem jest poznanie innych gości i przy
+              okazji mnie: przez historie, wspomnienia i drobne tropy, które
+              pojawią się w trakcie imprezy. Na koniec gry wylosujemy 3
+              zwycięzców, a do zdobycia będą nagrody.
             </p>
           </div>
 
@@ -75,25 +77,41 @@ export function LoginForm() {
                   </p>
                   <p className="mt-1 text-sm leading-6 text-foreground/90">
                     To nie ma być quizowanie się nawzajem. Celem gry jest
-                    poznanie się, otwieranie rozmów i wyciąganie historii bez
-                    zadawania pytań wprost.
+                    poznanie innych, otwieranie rozmów i wyciąganie informacji
+                    od osób na imprezie bez zadawania pytań wprost.
                   </p>
                 </div>
               </div>
             </div>
             <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
               <MessageCircleMore className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-              <p className="text-sm leading-6 text-muted-foreground">
-                Możesz próbować odpowiedzi tyle razy, ile chcesz. Zamiast
-                wypytywać wprost, spróbuj dojść do odpowiedzi przez anegdotę,
-                wspomnienie albo luźny trop z rozmowy.
-              </p>
+              <div className="space-y-2 text-sm leading-6 text-muted-foreground">
+                <p>
+                  Możesz próbować odpowiedzieć na pytanie tyle razy, ile
+                  chcesz, bez ujemnych punktów. Zamiast wypytywać wprost,
+                  spróbuj dojść do odpowiedzi przez anegdotę, wspomnienie albo
+                  luźny trop z rozmowy.
+                </p>
+                <p>
+                  Na przykład: zamiast pytać{" "}
+                  <span className="text-foreground">
+                    „na jakiej uczelni studiował Oskar?”
+                  </span>
+                  , zapytaj{" "}
+                  <span className="text-foreground">
+                    „czy znałeś Oskara podczas studiów?” albo „skąd znacie się z
+                    Oskarem?”
+                  </span>
+                  . Niech rozmowa sama nakieruje Cię na odpowiedź. Każde pytanie
+                  ma też podpowiedź, jeśli utkniesz.
+                </p>
+              </div>
             </div>
             <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
               <UsersRound className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <p className="text-sm leading-6 text-muted-foreground">
-                Grasz solo albo w parze. Jeśli wpiszecie to samo imię na innym
-                telefonie, wróci ten sam stan gry.
+                Grasz solo albo w parze. Jeśli wpiszecie ten sam login na innym
+                telefonie, pojawi się tam ten sam stan gry.
               </p>
             </div>
             <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
@@ -114,25 +132,48 @@ export function LoginForm() {
               <Sparkles className="h-3.5 w-3.5" />
               Rozmowy zamiast quizu
             </div>
-            <CardTitle className="text-2xl">Jak masz / macie na imię ?</CardTitle>
+            <CardTitle className="text-2xl">
+              Jak masz na imię albo jak nazywa się Wasza para?
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form action={formAction} className="space-y-4">
-              <div className="space-y-2">
+              <div className="space-y-3">
+                <div className="rounded-md border border-amber-400/25 bg-amber-400/10 p-3">
+                  <div className="flex gap-3">
+                    <BadgeAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">
+                        Wpisz unikalny login
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                        Nie wpisuj samego imienia, bo ktoś inny na imprezie może
+                        mieć takie samo. Użyj imienia i nazwiska, nazwy pary
+                        albo czegoś unikalnego, na przykład{" "}
+                        <span className="text-foreground">„Kasia Kowalska”</span>
+                        , <span className="text-foreground">„Kasia i Tomek”</span>{" "}
+                        albo <span className="text-foreground">„Wesoła Kasia”</span>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
                 <label
                   htmlFor="username"
                   className="text-sm font-medium text-muted-foreground"
                 >
-                  Imię
+                  Login
                 </label>
                 <Input
                   id="username"
                   name="username"
-                  autoComplete="given-name"
-                  placeholder="np. Kasia i Tomek"
+                  autoComplete="name"
+                  placeholder="np. Kasia Kowalska albo Kasia i Tomek"
                   maxLength={32}
                   required
                 />
+                </div>
               </div>
 
               {state.error ? (

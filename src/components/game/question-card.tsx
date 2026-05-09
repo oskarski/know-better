@@ -37,6 +37,7 @@ export function QuestionCard({
   const isCorrect = question.status === "correct";
   const isIncorrect = question.status === "incorrect";
   const isCorrectWithHint = isCorrect && question.hintUsed;
+  const isHintRevealedByClosedGame = disabled && Boolean(question.hint) && !question.hintUsed;
 
   return (
     <Card
@@ -87,13 +88,23 @@ export function QuestionCard({
               disabled={busy || disabled || (isCorrect && !question.hintUsed) || question.hintUsed}
               className="min-w-0"
             >
-              {question.hintUsed ? <Lightbulb /> : isCorrect ? <X /> : <Lightbulb />}
-              {question.hintUsed ? "Podpowiedź użyta" : "Pokaż podpowiedź"}
+              {question.hintUsed || isHintRevealedByClosedGame ? (
+                <Lightbulb />
+              ) : isCorrect ? (
+                <X />
+              ) : (
+                <Lightbulb />
+              )}
+              {question.hintUsed
+                ? "Podpowiedź użyta"
+                : isHintRevealedByClosedGame
+                  ? "Podpowiedź ujawniona"
+                  : "Pokaż podpowiedź"}
             </Button>
           </div>
         </div>
 
-        {question.hintUsed && question.hint ? (
+        {question.hint ? (
           <div className="rounded-lg border border-primary/20 bg-primary/10 p-3 text-sm leading-6 text-amber-100">
             <span className="font-semibold text-primary">Podpowiedź: </span>
             {question.hint}

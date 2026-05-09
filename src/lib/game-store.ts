@@ -235,6 +235,14 @@ function cleanUsername(username: string) {
   return username.trim().replace(/\s+/g, " ").slice(0, 32);
 }
 
+function isValidPlayerName(username: string) {
+  return cleanUsername(username).split(" ").filter(Boolean).length >= 2;
+}
+
+function invalidPlayerNameMessage() {
+  return "Podaj imię i nazwisko albo unikalną nazwę pary z co najmniej 2 słów, np. Kasia Kowalska albo Kasia i Tomek.";
+}
+
 function usernameKey(username: string) {
   return normalizeAnswer(cleanUsername(username));
 }
@@ -377,12 +385,13 @@ function makeSnapshot(player: StoredPlayer, meta: StoredGameMeta): GameSnapshot 
   const questions: QuestionView[] = publicQuestions.map((question) => {
     const storedAnswer = player.answers[String(question.id)];
     const fullQuestion = fullQuestions.find((item) => item.id === question.id);
+    const shouldRevealHint = meta.status === "closed" || storedAnswer?.hintUsed;
 
     return {
       ...question,
       status: storedAnswer?.status ?? "unanswered",
       hintUsed: storedAnswer?.hintUsed ?? false,
-      hint: storedAnswer?.hintUsed ? fullQuestion?.hint : undefined,
+      hint: shouldRevealHint ? fullQuestion?.hint : undefined,
       savedAnswer: storedAnswer?.value ?? "",
     };
   });
@@ -470,7 +479,7 @@ function resetPlayerProgress(player: StoredPlayer) {
 
 function ensureGameIsOpen(meta: StoredGameMeta) {
   if (meta.status === "closed") {
-    throw new Error("Gra jest zakończona. Odpowiedzi nie są już przyjmowane.");
+    throw new Error("Gra jest zamknięta. Odśwież stronę, żeby zobaczyć końcowy stan.");
   }
 }
 
@@ -644,8 +653,8 @@ function applyHintUsage(player: StoredPlayer, questionId: number) {
 async function redisFindOrCreatePlayer(username: string) {
   const cleanedUsername = cleanUsername(username);
 
-  if (cleanedUsername.length < 2) {
-    throw new Error("Podaj imię składające się z co najmniej 2 znaków.");
+  if (!isValidPlayerName(cleanedUsername)) {
+    throw new Error(invalidPlayerNameMessage());
   }
 
   const id = usernameKey(cleanedUsername);
@@ -705,29 +714,26 @@ async function redisGetAdminDashboard() {
 }
 
 async function redisClearPlayerState(playerId: string) {
-  const player = await redisGetPlayer(playerId);
+  const [player, meta] = await Promise.all([redisGetPlayer(playerId), redisGetMeta()]);
 
   if (!player) {
     throw new Error("Nie znaleziono gracza.");
   }
 
   resetPlayerProgress(player);
-  await redisSavePlayer(player);
+  removePlayerFromWinners(meta, playerId);
+  removePlayerFromLotteryPool(meta, playerId);
+  await Promise.all([redisSavePlayer(player), redisSaveMeta(meta)]);
 }
 
 async function redisClearAllPlayerStates() {
-  const players = await redisGetAllPlayers();
+  const keys = await redisPlayerKeys();
   const meta = defaultGameMeta();
 
-  await Promise.all(
-    [
-      ...players.map(async (player) => {
-        resetPlayerProgress(player);
-        await redisSavePlayer(player);
-      }),
-      redisSaveMeta(meta),
-    ],
-  );
+  await Promise.all([
+    redisSaveMeta(meta),
+    ...(keys.length > 0 ? [redisCommand<number>(["DEL", ...keys])] : []),
+  ]);
 }
 
 async function redisDeletePlayerState(playerId: string) {
@@ -744,10 +750,9 @@ async function redisDeletePlayerState(playerId: string) {
 }
 
 async function redisCloseGame() {
-  const [players, meta, keys] = await Promise.all([
+  const [players, meta] = await Promise.all([
     redisGetAllPlayers(),
     redisGetMeta(),
-    redisPlayerKeys(),
   ]);
 
   meta.winners = [];
@@ -756,10 +761,7 @@ async function redisCloseGame() {
   );
   closeMeta(meta);
 
-  await Promise.all([
-    redisSaveMeta(meta),
-    ...(keys.length > 0 ? [redisCommand<number>(["DEL", ...keys])] : []),
-  ]);
+  await redisSaveMeta(meta);
 
   return meta;
 }
@@ -779,8 +781,8 @@ export async function findOrCreatePlayer(username: string) {
 
   const cleanedUsername = cleanUsername(username);
 
-  if (cleanedUsername.length < 2) {
-    throw new Error("Podaj imię składające się z co najmniej 2 znaków.");
+  if (!isValidPlayerName(cleanedUsername)) {
+    throw new Error(invalidPlayerNameMessage());
   }
 
   return updateStore((store) => {
@@ -906,6 +908,7 @@ export async function clearPlayerState(playerId: string) {
   }
 
   return updateStore((store) => {
+    const meta = ensureMeta(store);
     const player = store.players[playerId];
 
     if (!player) {
@@ -914,6 +917,8 @@ export async function clearPlayerState(playerId: string) {
 
     for (const matchingPlayer of playersWithSameName(store, player.username)) {
       resetPlayerProgress(matchingPlayer);
+      removePlayerFromWinners(meta, matchingPlayer.id);
+      removePlayerFromLotteryPool(meta, matchingPlayer.id);
     }
   });
 }
@@ -924,10 +929,7 @@ export async function clearAllPlayerStates() {
   }
 
   return updateStore((store) => {
-    for (const player of Object.values(store.players)) {
-      resetPlayerProgress(player);
-    }
-
+    store.players = {};
     resetMeta(store);
   });
 }
@@ -964,10 +966,6 @@ export async function closeGame() {
     meta.lotteryPool = makeCurrentLotteryPool(
       sortAdminPlayers(uniquePlayersByName(Object.values(store.players)).map(makeAdminPlayerView)),
     );
-
-    for (const playerId of Object.keys(store.players)) {
-      delete store.players[playerId];
-    }
 
     return closeMeta(meta);
   });

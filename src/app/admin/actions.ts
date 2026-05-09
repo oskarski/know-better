@@ -92,7 +92,7 @@ export async function clearAllPlayerStatesAction(): Promise<AdminMutationResult>
 
     return {
       ok: true,
-      message: "Stan wszystkich graczy i losowanie zostały wyczyszczone.",
+      message: "Stan całej gry został wyczyszczony razem z listą graczy.",
     };
   } catch (error) {
     return {
@@ -136,7 +136,7 @@ export async function closeGameAction(): Promise<AdminMutationResult> {
 
     return {
       ok: true,
-      message: "Gra została zamknięta, gracze zostali wyczyszczeni, a pula losów jest gotowa do losowania.",
+      message: "Gra została zamknięta. Stan graczy został zachowany, a pula losów jest gotowa do losowania.",
     };
   } catch (error) {
     return {

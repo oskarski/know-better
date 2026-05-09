@@ -6,21 +6,15 @@ import type { Difficulty, PublicQuestion, Question } from "@/lib/types";
 const typedQuestions = questions as Question[];
 
 function assertQuestionSet() {
-  const expectedCounts: Record<Difficulty, number> = {
-    easy: 5,
-    medium: 10,
-    hard: 5,
-  };
+  const allowedDifficulties: Difficulty[] = ["easy", "medium", "hard"];
 
   if (typedQuestions.length !== 20) {
     throw new Error("Plik pytań musi zawierać dokładnie 20 pytań.");
   }
 
-  for (const difficulty of Object.keys(expectedCounts) as Difficulty[]) {
-    const count = typedQuestions.filter((item) => item.difficulty === difficulty).length;
-
-    if (count !== expectedCounts[difficulty]) {
-      throw new Error(`Nieprawidłowa liczba pytań dla poziomu ${difficulty}.`);
+  for (const question of typedQuestions) {
+    if (!allowedDifficulties.includes(question.difficulty)) {
+      throw new Error(`Nieprawidłowy poziom trudności pytania ${question.id}.`);
     }
   }
 }

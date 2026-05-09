@@ -15,21 +15,18 @@ type QuestionGroupProps = {
   onHint: (questionId: number) => void;
 };
 
-const groupCopy: Record<Difficulty, { title: string; badge: string; description: string }> = {
+const groupCopy: Record<Difficulty, { title: string; description: string }> = {
   easy: {
     title: "Łatwe",
-    badge: "5 pytań",
-    description: "Na rozgrzewkę. Najczęściej wystarczy zapytać jedną osobę obok.",
+    description: "Na rozgrzewkę. Najczęściej wystarczy dobrze posłuchać rozmów przy stole.",
   },
   medium: {
     title: "Średnie",
-    badge: "10 pytań",
     description: "Tu zaczyna się chodzenie po sali i łączenie wskazówek.",
   },
   hard: {
     title: "Trudne",
-    badge: "5 pytań",
-    description: "Dla tych, którzy naprawdę dobrze przesłuchają towarzystwo.",
+    description: "Dla tych, którzy naprawdę dobrze rozgryzą towarzystwo.",
   },
 };
 
@@ -51,7 +48,9 @@ export function QuestionGroup({
         <div>
           <div className="mb-1 flex items-center gap-2">
             <h2 className="text-xl font-bold tracking-normal">{copy.title}</h2>
-            <Badge variant="outline">{copy.badge}</Badge>
+            <Badge variant="outline">
+              {questions.length} {questions.length === 1 ? "pytanie" : "pytań"}
+            </Badge>
           </div>
           <p className="max-w-xl text-sm leading-6 text-muted-foreground">{copy.description}</p>
         </div>

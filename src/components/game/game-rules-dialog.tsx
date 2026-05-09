@@ -16,7 +16,7 @@ const rules = [
   {
     icon: Sparkles,
     title: "O co chodzi?",
-    text: "Rozmawiaj z gośćmi i odkrywaj fakty o solenizancie. Gra działa w tle przez całą imprezę.",
+    text: "Celem gry jest poznanie innych gości i przy okazji mnie. Rozmawiaj, słuchaj historii i odkrywaj fakty bez robienia z tego quizu przy stole.",
   },
   {
     icon: UsersRound,
@@ -29,9 +29,14 @@ const rules = [
     text: "Wpisz odpowiedź i kliknij „Sprawdź”. Możesz próbować dowolną liczbę razy, a wynik zapisuje się automatycznie.",
   },
   {
+    icon: HelpCircle,
+    title: "Jak pytać?",
+    text: "Unikaj pytań zadawanych wprost. Zamiast „jaki ma tytuł naukowy?”, spróbuj wyciągnąć informację z rozmowy, anegdoty albo wspólnego wspomnienia.",
+  },
+  {
     icon: Medal,
     title: "Podpowiedzi",
-    text: "Podpowiedź zostaje zapisana na stałe. Dobra odpowiedź po podpowiedzi daje 0,5 punktu.",
+    text: "Podpowiedź zostaje zapisana na stałe. Dobra odpowiedź po podpowiedzi daje 0,75 punktu.",
   },
   {
     icon: Ticket,

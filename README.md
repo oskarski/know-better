@@ -2,6 +2,12 @@
 
 Mobilna gra imprezowa w Next.js.
 
+## Idea gry
+
+Celem KnowBetter jest poznanie innych gości i przy okazji solenizanta. Gracze szukają odpowiedzi w rozmowach, wspomnieniach i anegdotach, najlepiej bez zadawania pytań wprost.
+
+Podpowiedź zapisuje się na stałe i obniża punktację za dane pytanie o 0,25 punktu.
+
 ## Dane gry
 
 Lokalnie aplikacja zapisuje stan w `data/game-state.json`.

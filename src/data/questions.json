@@ -2,141 +2,141 @@
   {
     "id": 1,
     "difficulty": "easy",
-    "question": "Jak ma na imię solenizant?",
-    "answer": "Oskar",
-    "hint": "To imię pojawia się dziś częściej niż zwykle."
+    "question": "Jaki mam tytuł naukowy?",
+    "answer": "inżynier",
+    "hint": "Pogadaj z osobą, która nie mieszka w Polsce - świętowała razem ze mną po tym, jak zdałem egzamin."
   },
   {
     "id": 2,
     "difficulty": "easy",
-    "question": "Które urodziny dziś świętujemy?",
-    "answer": "30",
-    "hint": "To okrągła rocznica, którą trudno pomylić."
+    "question": "W jakim mieście nauczyłem się robić makaron?",
+    "answer": "rzym",
+    "hint": "Pogadaj z kimś kto jadł meatballe mojej roboty."
   },
   {
     "id": 3,
     "difficulty": "easy",
-    "question": "Jaki napój najczęściej ratuje poranek solenizanta?",
-    "answer": "kawa",
-    "hint": "Czarny klasyk, zwykle w kubku."
+    "question": "Jakie jest moje ulubione miejsce w Europie?",
+    "answer": "madera",
+    "hint": "Słuchaj mnie uważnie o 21:30."
   },
   {
     "id": 4,
-    "difficulty": "easy",
-    "question": "Co solenizant wybierze szybciej: pizzę czy sushi?",
-    "answer": "pizza",
-    "hint": "Okrągła odpowiedź z serem."
+    "difficulty": "hard",
+    "question": "Na jaką górę najbardziej chcę wejść?",
+    "answer": "kilimandzaro",
+    "hint": "Zagdaj do osoby, z którą odbyłem najwięcej podróży zagranicznych."
   },
   {
     "id": 5,
-    "difficulty": "easy",
-    "question": "Woli góry czy morze?",
-    "answer": "góry",
-    "hint": "Tam, gdzie łatwiej o widok po wysiłku."
+    "difficulty": "hard",
+    "question": "Za kogo przebrałem się na „magicznego” Sylwestra?",
+    "answer": "aladyn",
+    "hint": "Znajdź osoby, które wciągały gaz rozweselający."
   },
   {
     "id": 6,
-    "difficulty": "medium",
-    "question": "Jakie miasto solenizant najczęściej nazywa swoim?",
-    "answer": "Warszawa",
-    "hint": "Stolica jest dobrym tropem."
+    "difficulty": "hard",
+    "question": "Co przywiozłem specjalnie dla Basi z Cypru?",
+    "answer": "halloumi",
+    "hint": "Podpytaj osoby, które mnie woziły w wózku sklepowym po Larnace."
   },
   {
     "id": 7,
     "difficulty": "medium",
-    "question": "Jaki kolor najczęściej pojawia się w garderobie solenizanta?",
-    "answer": "czarny",
-    "hint": "Pasuje prawie do wszystkiego."
+    "question": "Co piłem, jadąc pociągiem poznać Krysię?",
+    "answer": "cuba libre",
+    "hint": "Przygotowania udokumentowałem na Instagramie."
   },
   {
     "id": 8,
     "difficulty": "medium",
-    "question": "Jaki typ muzyki najłatwiej rozkręca solenizanta?",
-    "answer": "elektronika",
-    "hint": "Dużo bitu, mało przypadkowych gitar."
+    "question": "Jak nazywała się moja pierwsza żona?",
+    "answer": "julianna",
+    "hint": "Mój obozowy ślub miał miejsce na obozie harcerskim 2015."
   },
   {
     "id": 9,
-    "difficulty": "medium",
-    "question": "Jaki deser solenizant wybierze bez długiego namysłu?",
-    "answer": "sernik",
-    "hint": "Klasyk z twarogiem."
+    "difficulty": "easy",
+    "question": "Jaki numer miała moja drużyna harcerska?",
+    "answer": "60",
+    "hint": "Zagadaj do kogoś z kim byłem na Babiej Górze."
   },
   {
     "id": 10,
     "difficulty": "medium",
-    "question": "Czy solenizant jest bardziej rannym ptaszkiem czy nocnym markiem?",
-    "answer": "nocny marek",
-    "hint": "Najlepsze pomysły przychodzą późno."
+    "question": "Jakim samochodem jeździłem jako dostawca? (pełna nazwa)",
+    "answer": "volkswagen transporter t4",
+    "hint": "Pogadaj z kimś kto zna znaczenie akronimu UFO."
   },
   {
     "id": 11,
-    "difficulty": "medium",
-    "question": "Jaka aplikacja najczęściej pożera mu czas?",
-    "answer": "YouTube",
-    "hint": "Jeden film prowadzi do kolejnych pięciu."
+    "difficulty": "easy",
+    "question": "Dokąd wyprowadziłem się z Warszawy na rok?",
+    "answer": "wroclaw",
+    "hint": "Zagadaj do osoby z którą zwiedzałem Hagia Sophie."
   },
   {
     "id": 12,
     "difficulty": "medium",
-    "question": "Jaki sport najchętniej ogląda?",
-    "answer": "piłka nożna",
-    "hint": "Dwie bramki, jedna piłka."
+    "question": "Jakie było największe jajko, którego próbowałem?",
+    "answer": "strusie",
+    "hint": "Pogadaj z kimś, kto uwielbia próbować nowych potraw i smaków."
   },
   {
     "id": 13,
     "difficulty": "medium",
-    "question": "Jaki smak lodów wybiera najczęściej?",
-    "answer": "pistacjowe",
-    "hint": "Zielony smak, ale nie miętowy."
+    "question": "Co znalazłem na koszu do koszykówki po mojej 18-tce w Raszynie?",
+    "answer": "spodnie",
+    "hint": "Zagadaj do osoby z którą odwiedziłem Karlskrone."
   },
   {
     "id": 14,
     "difficulty": "medium",
-    "question": "Co prędzej wybierze na wolny wieczór: planszówki czy klub?",
-    "answer": "planszówki",
-    "hint": "Stół, zasady i trochę negocjacji."
+    "question": "Kogo niespodziewanie spotkałem na Cyprze?",
+    "answer": "wojtek",
+    "hint": "Żona tej osoby uwielbia Dawida Podsiadło."
   },
   {
     "id": 15,
     "difficulty": "medium",
-    "question": "Jaki kierunek podróży ma wysoko na liście marzeń?",
-    "answer": "Japonia",
-    "hint": "Kraj sushi, pociągów i neonów."
+    "question": "Jakie danie zjadłem na spółkę z Mateuszem w Józefowie?",
+    "answer": "kebab",
+    "hint": "Ten Mateusz jest żeglarzem."
   },
   {
     "id": 16,
     "difficulty": "hard",
-    "question": "Jaki był pierwszy koncert, na którym był solenizant?",
-    "answer": "Myslovitz",
-    "hint": "Polski zespół z nostalgicznych playlist."
+    "question": "Jak nazywa się firma, gdzie zdobyłem pierwszą pracę jako programista?",
+    "answer": "valueadd",
+    "hint": "Zagadaj do osoby z wąsem."
   },
   {
     "id": 17,
     "difficulty": "hard",
-    "question": "Jakiego słowa solenizant nadużywa, gdy coś mu się podoba?",
-    "answer": "sztos",
-    "hint": "Krótko, entuzjastycznie i trochę po miejsku."
+    "question": "Jak nazywa się moja firma? (krótsza nazwa)",
+    "answer": "przedni development",
+    "hint": "Jako FrontEnd developer polecam zagadać do mojej ulubionej HR managerki - może pomimo RODO zdradzi Ci ten sekret :D"
   },
   {
     "id": 18,
     "difficulty": "hard",
-    "question": "Jaką potrawę solenizant próbował kiedyś ugotować i prawie przypalił?",
-    "answer": "risotto",
-    "hint": "Ryż, mieszanie i dużo cierpliwości."
+    "question": "Jak nazywał się mój ulubiony drink autorstwa osoby, z którą często gotowałem?",
+    "answer": "rozpacz ksiegowego",
+    "hint": "Porozmawiaj z osobą, która zawodowo zajmuje się księgowością."
   },
   {
     "id": 19,
     "difficulty": "hard",
-    "question": "Jaki film solenizant może cytować z pamięci?",
-    "answer": "Forrest Gump",
-    "hint": "Bieganie, ławka i pudełko czekoladek."
+    "question": "Kto zabrał mnie pierwszy raz na siłownię? (imię)",
+    "answer": "zuzia",
+    "hint": "Znajdź osobę wege na imprezie."
   },
   {
     "id": 20,
     "difficulty": "hard",
-    "question": "Jaka była jego pierwsza wymarzona praca z dzieciństwa?",
-    "answer": "astronauta",
-    "hint": "Daleko od biurka, bardzo wysoko nad Ziemią."
+    "question": "Który szlak górski w Polsce próbowałem przejść, ale mi się nie udało?",
+    "answer": "orla perć",
+    "hint": "Pogadaj z fanem negroni, któremu się to udało!"
   }
 ]

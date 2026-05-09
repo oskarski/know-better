@@ -27,7 +27,7 @@ export function HintConfirmDialog({ open, onOpenChange, onConfirm }: HintConfirm
           </div>
           <DialogTitle>Pokazać podpowiedź?</DialogTitle>
           <DialogDescription>
-            Po użyciu podpowiedzi za to pytanie można zdobyć maksymalnie 0,5 punktu zamiast 1 punktu.
+            Po użyciu podpowiedzi za to pytanie można zdobyć maksymalnie 0,75 punktu zamiast 1 punktu.
           </DialogDescription>
         </DialogHeader>
 
@@ -36,7 +36,7 @@ export function HintConfirmDialog({ open, onOpenChange, onConfirm }: HintConfirm
             <AlertTriangle className="h-4 w-4" />
             Podpowiedź zapisuje się na stałe
           </div>
-          <p>Jeśli chcesz walczyć o pełny punkt, spróbuj jeszcze kogoś podpytać.</p>
+          <p>Jeśli chcesz walczyć o pełny punkt, spróbuj jeszcze wyciągnąć trop z rozmowy.</p>
         </div>
 
         <div className="grid gap-2 min-[430px]:grid-cols-2">

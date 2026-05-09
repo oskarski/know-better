@@ -11,7 +11,7 @@ export function calculateScore(answers: Record<string, StoredAnswerLike | undefi
       return score;
     }
 
-    return score + (answer.hintUsed ? 0.5 : 1);
+    return score + (answer.hintUsed ? 0.75 : 1);
   }, 0);
 }
 

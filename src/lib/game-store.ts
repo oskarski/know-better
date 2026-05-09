@@ -1,13 +1,22 @@
 import "server-only";
 
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { getPublicQuestions, getQuestionById, getQuestions } from "@/lib/questions";
 import { normalizeAnswer } from "@/lib/normalization";
 import { calculateLotteryTickets, calculateScore } from "@/lib/scoring";
-import type { AdminPlayerView, GameSnapshot, QuestionStatus, QuestionView } from "@/lib/types";
+import type {
+  AdminDashboard,
+  AdminGameState,
+  AdminPlayerView,
+  DrawWinnerView,
+  GameSnapshot,
+  GameStatus,
+  QuestionStatus,
+  QuestionView,
+} from "@/lib/types";
 
 export const SESSION_COOKIE = "knowbetter_player_id";
 
@@ -27,13 +36,22 @@ type StoredPlayer = {
   answers: Record<string, StoredAnswer>;
 };
 
+type StoredGameMeta = {
+  status: GameStatus;
+  closedAt?: string;
+  winners: DrawWinnerView[];
+  updatedAt: string;
+};
+
 type StoredGame = {
   players: Record<string, StoredPlayer>;
+  meta?: StoredGameMeta;
 };
 
 const dataDirectory = path.join(process.cwd(), "data");
 const storePath = path.join(dataDirectory, "game-state.json");
 let writeQueue: Promise<unknown> = Promise.resolve();
+const maxWinners = 3;
 
 type RedisConfig = {
   token: string;
@@ -42,6 +60,7 @@ type RedisConfig = {
 
 function emptyStore(): StoredGame {
   return {
+    meta: defaultGameMeta(),
     players: {},
   };
 }
@@ -72,6 +91,10 @@ function storagePrefix() {
 
 function redisPlayerKey(playerId: string) {
   return `${storagePrefix()}:player:${playerId}`;
+}
+
+function redisMetaKey() {
+  return `${storagePrefix()}:meta`;
 }
 
 async function redisCommand<T>(command: unknown[]): Promise<T> {
@@ -112,6 +135,24 @@ async function redisGetPlayer(playerId: string) {
 
 async function redisSavePlayer(player: StoredPlayer) {
   await redisCommand<"OK">(["SET", redisPlayerKey(player.id), JSON.stringify(player)]);
+}
+
+async function redisDeletePlayer(playerId: string) {
+  await redisCommand<number>(["DEL", redisPlayerKey(playerId)]);
+}
+
+async function redisGetMeta() {
+  const rawMeta = await redisCommand<string | null>(["GET", redisMetaKey()]);
+
+  if (!rawMeta) {
+    return defaultGameMeta();
+  }
+
+  return normalizeMeta(JSON.parse(rawMeta) as Partial<StoredGameMeta>);
+}
+
+async function redisSaveMeta(meta: StoredGameMeta) {
+  await redisCommand<"OK">(["SET", redisMetaKey(), JSON.stringify(meta)]);
 }
 
 async function redisPlayerKeys() {
@@ -198,6 +239,33 @@ function usernameKey(username: string) {
 
 function now() {
   return new Date().toISOString();
+}
+
+function defaultGameMeta(): StoredGameMeta {
+  return {
+    status: "open",
+    winners: [],
+    updatedAt: now(),
+  };
+}
+
+function normalizeMeta(meta?: Partial<StoredGameMeta>): StoredGameMeta {
+  return {
+    status: meta?.status === "closed" ? "closed" : "open",
+    closedAt: meta?.closedAt,
+    winners: Array.isArray(meta?.winners) ? meta.winners : [],
+    updatedAt: meta?.updatedAt ?? now(),
+  };
+}
+
+function ensureMeta(store: StoredGame) {
+  store.meta = normalizeMeta(store.meta);
+  return store.meta;
+}
+
+function resetMeta(store: StoredGame) {
+  store.meta = defaultGameMeta();
+  return store.meta;
 }
 
 function cloneAnswers(answers: Record<string, StoredAnswer>) {
@@ -299,7 +367,7 @@ function syncPlayersWithSameName(store: StoredGame, username: string) {
   return primaryPlayer;
 }
 
-function makeSnapshot(player: StoredPlayer): GameSnapshot {
+function makeSnapshot(player: StoredPlayer, meta: StoredGameMeta): GameSnapshot {
   const fullQuestions = getQuestions();
   const publicQuestions = getPublicQuestions();
   const questions: QuestionView[] = publicQuestions.map((question) => {
@@ -329,6 +397,10 @@ function makeSnapshot(player: StoredPlayer): GameSnapshot {
     progressPercent: Math.min(100, Math.round((score / 18) * 100)),
     correctCount: questions.filter((question) => question.status === "correct").length,
     totalQuestions: questions.length,
+    gameStatus: {
+      status: meta.status,
+      closedAt: meta.closedAt,
+    },
   };
 }
 
@@ -390,6 +462,105 @@ function resetPlayerProgress(player: StoredPlayer) {
   player.answers = {};
   player.updatedAt = now();
   return player;
+}
+
+function ensureGameIsOpen(meta: StoredGameMeta) {
+  if (meta.status === "closed") {
+    throw new Error("Gra jest zakończona. Odpowiedzi nie są już przyjmowane.");
+  }
+}
+
+function removePlayerFromWinners(meta: StoredGameMeta, playerId: string) {
+  meta.winners = meta.winners
+    .filter((winner) => winner.playerId !== playerId)
+    .map((winner, index) => ({
+      ...winner,
+      place: index + 1,
+    }));
+  meta.updatedAt = now();
+}
+
+function makeAdminGameState(meta: StoredGameMeta, players: AdminPlayerView[]): AdminGameState {
+  const winnerIds = new Set(meta.winners.map((winner) => winner.playerId));
+  const eligiblePlayers = players.filter(
+    (player) => player.lotteryTickets > 0 && !winnerIds.has(player.id),
+  );
+
+  return {
+    status: meta.status,
+    closedAt: meta.closedAt,
+    winners: meta.winners,
+    maxWinners,
+    totalTickets: players.reduce((sum, player) => sum + player.lotteryTickets, 0),
+    remainingTickets: eligiblePlayers.reduce((sum, player) => sum + player.lotteryTickets, 0),
+    eligiblePlayerCount: eligiblePlayers.length,
+    canDraw:
+      meta.status === "closed" &&
+      meta.winners.length < maxWinners &&
+      eligiblePlayers.length > 0,
+  };
+}
+
+function makeAdminDashboard(meta: StoredGameMeta, players: StoredPlayer[]): AdminDashboard {
+  const adminPlayers = sortAdminPlayers(uniquePlayersByName(players).map(makeAdminPlayerView));
+
+  return {
+    players: adminPlayers,
+    gameState: makeAdminGameState(meta, adminPlayers),
+  };
+}
+
+function closeMeta(meta: StoredGameMeta) {
+  if (meta.status === "closed") {
+    return meta;
+  }
+
+  const closedAt = now();
+  meta.status = "closed";
+  meta.closedAt = closedAt;
+  meta.updatedAt = closedAt;
+  return meta;
+}
+
+function chooseNextWinner(meta: StoredGameMeta, players: AdminPlayerView[]) {
+  if (meta.status !== "closed") {
+    throw new Error("Najpierw zamknij grę.");
+  }
+
+  if (meta.winners.length >= maxWinners) {
+    throw new Error("Wylosowano już wszystkich zwycięzców.");
+  }
+
+  const winnerIds = new Set(meta.winners.map((winner) => winner.playerId));
+  const eligiblePlayers = players.filter(
+    (player) => player.lotteryTickets > 0 && !winnerIds.has(player.id),
+  );
+  const totalTickets = eligiblePlayers.reduce((sum, player) => sum + player.lotteryTickets, 0);
+
+  if (totalTickets === 0) {
+    throw new Error("Nie ma już graczy z losami.");
+  }
+
+  let winningTicket = randomInt(1, totalTickets + 1);
+  const selectedPlayer =
+    eligiblePlayers.find((player) => {
+      winningTicket -= player.lotteryTickets;
+      return winningTicket <= 0;
+    }) ?? eligiblePlayers[eligiblePlayers.length - 1];
+
+  const winner: DrawWinnerView = {
+    place: meta.winners.length + 1,
+    playerId: selectedPlayer.id,
+    username: selectedPlayer.username,
+    score: selectedPlayer.score,
+    lotteryTickets: selectedPlayer.lotteryTickets,
+    drawnAt: now(),
+  };
+
+  meta.winners = [...meta.winners, winner];
+  meta.updatedAt = winner.drawnAt;
+
+  return winner;
 }
 
 function applySubmittedAnswer(player: StoredPlayer, questionId: number, answer: string) {
@@ -475,32 +646,39 @@ async function redisFindOrCreatePlayer(username: string) {
 }
 
 async function redisSubmitAnswer(playerId: string, questionId: number, answer: string) {
-  const player = await redisGetPlayer(playerId);
+  const [player, meta] = await Promise.all([redisGetPlayer(playerId), redisGetMeta()]);
 
   if (!player) {
     throw new Error("Sesja wygasła. Wejdź do gry ponownie.");
   }
 
+  ensureGameIsOpen(meta);
   applySubmittedAnswer(player, questionId, answer);
   await redisSavePlayer(player);
-  return makeSnapshot(player);
+  return makeSnapshot(player, meta);
 }
 
 async function redisRevealHint(playerId: string, questionId: number) {
-  const player = await redisGetPlayer(playerId);
+  const [player, meta] = await Promise.all([redisGetPlayer(playerId), redisGetMeta()]);
 
   if (!player) {
     throw new Error("Sesja wygasła. Wejdź do gry ponownie.");
   }
 
+  ensureGameIsOpen(meta);
   applyHintUsage(player, questionId);
   await redisSavePlayer(player);
-  return makeSnapshot(player);
+  return makeSnapshot(player, meta);
 }
 
 async function redisListAdminPlayers() {
   const players = await redisGetAllPlayers();
   return sortAdminPlayers(uniquePlayersByName(players).map(makeAdminPlayerView));
+}
+
+async function redisGetAdminDashboard() {
+  const [players, meta] = await Promise.all([redisGetAllPlayers(), redisGetMeta()]);
+  return makeAdminDashboard(meta, players);
 }
 
 async function redisClearPlayerState(playerId: string) {
@@ -516,13 +694,45 @@ async function redisClearPlayerState(playerId: string) {
 
 async function redisClearAllPlayerStates() {
   const players = await redisGetAllPlayers();
+  const meta = defaultGameMeta();
 
   await Promise.all(
-    players.map(async (player) => {
-      resetPlayerProgress(player);
-      await redisSavePlayer(player);
-    }),
+    [
+      ...players.map(async (player) => {
+        resetPlayerProgress(player);
+        await redisSavePlayer(player);
+      }),
+      redisSaveMeta(meta),
+    ],
   );
+}
+
+async function redisDeletePlayerState(playerId: string) {
+  const [player, meta] = await Promise.all([redisGetPlayer(playerId), redisGetMeta()]);
+
+  if (!player) {
+    throw new Error("Nie znaleziono gracza.");
+  }
+
+  removePlayerFromWinners(meta, playerId);
+
+  await Promise.all([redisDeletePlayer(playerId), redisSaveMeta(meta)]);
+}
+
+async function redisCloseGame() {
+  const meta = await redisGetMeta();
+  closeMeta(meta);
+  await redisSaveMeta(meta);
+  return meta;
+}
+
+async function redisDrawNextWinner() {
+  const [players, meta] = await Promise.all([redisGetAllPlayers(), redisGetMeta()]);
+  const adminPlayers = sortAdminPlayers(uniquePlayersByName(players).map(makeAdminPlayerView));
+  const winner = chooseNextWinner(meta, adminPlayers);
+
+  await redisSaveMeta(meta);
+  return winner;
 }
 
 export async function findOrCreatePlayer(username: string) {
@@ -560,11 +770,12 @@ export async function findOrCreatePlayer(username: string) {
 
 export async function getGameSnapshot(playerId: string) {
   if (getRedisConfig()) {
-    const player = await redisGetPlayer(playerId);
-    return player ? makeSnapshot(player) : null;
+    const [player, meta] = await Promise.all([redisGetPlayer(playerId), redisGetMeta()]);
+    return player ? makeSnapshot(player, meta) : null;
   }
 
   return updateStore((store) => {
+    const meta = ensureMeta(store);
     const sessionPlayer = store.players[playerId];
 
     if (!sessionPlayer) {
@@ -572,7 +783,7 @@ export async function getGameSnapshot(playerId: string) {
     }
 
     const player = syncPlayersWithSameName(store, sessionPlayer.username) ?? sessionPlayer;
-    return makeSnapshot(player);
+    return makeSnapshot(player, meta);
   });
 }
 
@@ -582,18 +793,20 @@ export async function submitAnswer(playerId: string, questionId: number, answer:
   }
 
   return updateStore((store) => {
+    const meta = ensureMeta(store);
     const sessionPlayer = store.players[playerId];
 
     if (!sessionPlayer) {
       throw new Error("Sesja wygasła. Wejdź do gry ponownie.");
     }
 
+    ensureGameIsOpen(meta);
     const player = syncPlayersWithSameName(store, sessionPlayer.username) ?? sessionPlayer;
 
     applySubmittedAnswer(player, questionId, answer);
 
     const syncedPlayer = syncPlayersWithSameName(store, player.username) ?? player;
-    return makeSnapshot(syncedPlayer);
+    return makeSnapshot(syncedPlayer, meta);
   });
 }
 
@@ -603,18 +816,20 @@ export async function revealHint(playerId: string, questionId: number) {
   }
 
   return updateStore((store) => {
+    const meta = ensureMeta(store);
     const sessionPlayer = store.players[playerId];
 
     if (!sessionPlayer) {
       throw new Error("Sesja wygasła. Wejdź do gry ponownie.");
     }
 
+    ensureGameIsOpen(meta);
     const player = syncPlayersWithSameName(store, sessionPlayer.username) ?? sessionPlayer;
 
     applyHintUsage(player, questionId);
 
     const syncedPlayer = syncPlayersWithSameName(store, player.username) ?? player;
-    return makeSnapshot(syncedPlayer);
+    return makeSnapshot(syncedPlayer, meta);
   });
 }
 
@@ -629,6 +844,22 @@ export async function listAdminPlayers() {
     }
 
     return sortAdminPlayers(uniquePlayersByName(Object.values(store.players)).map(makeAdminPlayerView));
+  });
+}
+
+export async function getAdminDashboard() {
+  if (getRedisConfig()) {
+    return redisGetAdminDashboard();
+  }
+
+  return updateStore((store) => {
+    const meta = ensureMeta(store);
+
+    for (const player of Object.values(store.players)) {
+      syncPlayersWithSameName(store, player.username);
+    }
+
+    return makeAdminDashboard(meta, Object.values(store.players));
   });
 }
 
@@ -659,5 +890,58 @@ export async function clearAllPlayerStates() {
     for (const player of Object.values(store.players)) {
       resetPlayerProgress(player);
     }
+
+    resetMeta(store);
+  });
+}
+
+export async function deletePlayerState(playerId: string) {
+  if (getRedisConfig()) {
+    return redisDeletePlayerState(playerId);
+  }
+
+  return updateStore((store) => {
+    const meta = ensureMeta(store);
+    const player = store.players[playerId];
+
+    if (!player) {
+      throw new Error("Nie znaleziono gracza.");
+    }
+
+    for (const matchingPlayer of playersWithSameName(store, player.username)) {
+      delete store.players[matchingPlayer.id];
+      removePlayerFromWinners(meta, matchingPlayer.id);
+    }
+  });
+}
+
+export async function closeGame() {
+  if (getRedisConfig()) {
+    return redisCloseGame();
+  }
+
+  return updateStore((store) => {
+    const meta = ensureMeta(store);
+    return closeMeta(meta);
+  });
+}
+
+export async function drawNextWinner() {
+  if (getRedisConfig()) {
+    return redisDrawNextWinner();
+  }
+
+  return updateStore((store) => {
+    const meta = ensureMeta(store);
+
+    for (const player of Object.values(store.players)) {
+      syncPlayersWithSameName(store, player.username);
+    }
+
+    const players = sortAdminPlayers(
+      uniquePlayersByName(Object.values(store.players)).map(makeAdminPlayerView),
+    );
+
+    return chooseNextWinner(meta, players);
   });
 }

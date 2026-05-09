@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LockKeyhole } from "lucide-react";
 import { toast } from "sonner";
 
 import { revealHintAction, submitAnswerAction } from "@/app/actions";
@@ -26,6 +27,7 @@ export function GameShell({ initialGame }: GameShellProps) {
   const [busyQuestionId, setBusyQuestionId] = useState<number | null>(null);
   const [hintQuestionId, setHintQuestionId] = useState<number | null>(null);
   const [confettiRun, setConfettiRun] = useState(0);
+  const isGameClosed = game.gameStatus.status === "closed";
 
   const questionsByDifficulty = useMemo(
     () =>
@@ -43,6 +45,11 @@ export function GameShell({ initialGame }: GameShellProps) {
   }, [game]);
 
   async function checkAnswer(questionId: number) {
+    if (isGameClosed) {
+      toast.info("Gra jest zakończona. Odpowiedzi nie są już przyjmowane.");
+      return;
+    }
+
     setBusyQuestionId(questionId);
     const previousTickets = game.lotteryTickets;
     const result = await submitAnswerAction(questionId, values[questionId] ?? "");
@@ -71,6 +78,12 @@ export function GameShell({ initialGame }: GameShellProps) {
 
   async function confirmHint() {
     if (!hintQuestionId) {
+      return;
+    }
+
+    if (isGameClosed) {
+      setHintQuestionId(null);
+      toast.info("Gra jest zakończona. Podpowiedzi nie są już dostępne.");
       return;
     }
 
@@ -104,6 +117,20 @@ export function GameShell({ initialGame }: GameShellProps) {
       />
 
       <div className="mx-auto max-w-5xl space-y-7 pt-5">
+        {isGameClosed ? (
+          <section className="rounded-lg border border-primary/25 bg-primary/10 p-4">
+            <div className="flex gap-3">
+              <LockKeyhole className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <p className="font-semibold text-foreground">Gra została zakończona.</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Wyniki są zapisane, a prowadzący może teraz przejść do finałowego losowania.
+                </p>
+              </div>
+            </div>
+          </section>
+        ) : null}
+
         {groups.map((difficulty) => (
           <QuestionGroup
             key={difficulty}
@@ -111,6 +138,7 @@ export function GameShell({ initialGame }: GameShellProps) {
             questions={questionsByDifficulty[difficulty]}
             values={values}
             busyQuestionId={busyQuestionId}
+            disabled={isGameClosed}
             onValueChange={(questionId, value) =>
               setValues((current) => ({
                 ...current,

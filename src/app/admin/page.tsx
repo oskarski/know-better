@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { isAdminAuthenticated } from "@/lib/admin-session";
-import { listAdminPlayers } from "@/lib/game-store";
+import { getAdminDashboard } from "@/lib/game-store";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,7 @@ export default async function AdminPage() {
     return <AdminLoginForm />;
   }
 
-  const players = await listAdminPlayers();
+  const dashboard = await getAdminDashboard();
 
-  return <AdminPanel players={players} />;
+  return <AdminPanel players={dashboard.players} gameState={dashboard.gameState} />;
 }

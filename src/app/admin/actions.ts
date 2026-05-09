@@ -9,7 +9,14 @@ import {
   setAdminSession,
   verifyAdminCredentials,
 } from "@/lib/admin-session";
-import { clearAllPlayerStates, clearPlayerState } from "@/lib/game-store";
+import {
+  clearAllPlayerStates,
+  clearPlayerState,
+  closeGame,
+  deletePlayerState,
+  drawNextWinner,
+} from "@/lib/game-store";
+import type { DrawWinnerView } from "@/lib/types";
 
 export type AdminLoginState = {
   error?: string;
@@ -18,6 +25,10 @@ export type AdminLoginState = {
 export type AdminMutationResult = {
   ok: boolean;
   message: string;
+};
+
+export type AdminDrawResult = AdminMutationResult & {
+  winner?: DrawWinnerView;
 };
 
 const accessDeniedResult: AdminMutationResult = {
@@ -55,6 +66,7 @@ export async function clearPlayerStateAction(playerId: string): Promise<AdminMut
   try {
     await clearPlayerState(playerId);
     revalidatePath("/admin");
+    revalidatePath("/");
 
     return {
       ok: true,
@@ -76,15 +88,82 @@ export async function clearAllPlayerStatesAction(): Promise<AdminMutationResult>
   try {
     await clearAllPlayerStates();
     revalidatePath("/admin");
+    revalidatePath("/");
 
     return {
       ok: true,
-      message: "Stan wszystkich graczy został wyczyszczony.",
+      message: "Stan wszystkich graczy i losowanie zostały wyczyszczone.",
     };
   } catch (error) {
     return {
       ok: false,
       message: error instanceof Error ? error.message : "Nie udało się wyczyścić stanu gry.",
+    };
+  }
+}
+
+export async function deletePlayerAction(playerId: string): Promise<AdminMutationResult> {
+  if (!(await isAdminAuthenticated())) {
+    return accessDeniedResult;
+  }
+
+  try {
+    await deletePlayerState(playerId);
+    revalidatePath("/admin");
+    revalidatePath("/");
+
+    return {
+      ok: true,
+      message: "Gracz został usunięty.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Nie udało się usunąć gracza.",
+    };
+  }
+}
+
+export async function closeGameAction(): Promise<AdminMutationResult> {
+  if (!(await isAdminAuthenticated())) {
+    return accessDeniedResult;
+  }
+
+  try {
+    await closeGame();
+    revalidatePath("/admin");
+    revalidatePath("/");
+
+    return {
+      ok: true,
+      message: "Gra została zamknięta. Możesz rozpocząć losowanie.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Nie udało się zamknąć gry.",
+    };
+  }
+}
+
+export async function drawNextWinnerAction(): Promise<AdminDrawResult> {
+  if (!(await isAdminAuthenticated())) {
+    return accessDeniedResult;
+  }
+
+  try {
+    const winner = await drawNextWinner();
+    revalidatePath("/admin");
+
+    return {
+      ok: true,
+      message: `${winner.place}. miejsce: ${winner.username}`,
+      winner,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Nie udało się wylosować zwycięzcy.",
     };
   }
 }

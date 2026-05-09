@@ -33,4 +33,6 @@ Opcjonalnie można je nadpisać zmiennymi:
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
 
-Panel pokazuje graczy posortowanych po postępie i pozwala wyczyścić zapisane odpowiedzi dla jednej osoby albo dla wszystkich graczy naraz.
+Panel pokazuje graczy posortowanych po postępie i pozwala wyczyścić zapisane odpowiedzi dla jednej osoby, usunąć gracza albo wyczyścić stan wszystkich graczy naraz.
+
+Po zakończeniu zbierania odpowiedzi admin może zamknąć grę. Zamknięta gra nie przyjmuje już nowych odpowiedzi ani podpowiedzi. Panel pozwala potem losować maksymalnie 3 zwycięzców po kolei, na bazie liczby losów zdobytych przez graczy.

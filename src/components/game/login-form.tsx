@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { ArrowRight, Sparkles, UsersRound } from "lucide-react";
+import { ArrowRight, MessageCircleMore, Sparkles, Ticket, UsersRound } from "lucide-react";
 
 import { loginAction, type LoginState } from "@/app/actions";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ export function LoginForm() {
 
   return (
     <main className="flex min-h-svh items-center justify-center px-4 py-6">
-      <section className="w-full max-w-md">
+      <section className="w-full max-w-md space-y-4">
         <div className="mb-6 flex items-center justify-center gap-3 text-primary">
           <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-primary/25 bg-primary/12">
             <UsersRound className="h-6 w-6" />
@@ -37,6 +37,46 @@ export function LoginForm() {
             <h1 className="text-2xl font-bold tracking-normal text-foreground">KnowBetter</h1>
           </div>
         </div>
+
+        <section className="space-y-3 rounded-lg border border-white/10 bg-white/5 p-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              Zanim wejdziesz
+            </p>
+            <h2 className="mt-1 text-2xl font-bold tracking-normal">
+              Popytaj ludzi. Odkryj historie. Zgarnij losy.
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              KnowBetter to luźna gra imprezowa, która dzieje się między rozmowami. Szukasz
+              odpowiedzi o solenizancie, podpytujesz gości i powoli składasz pełniejszy obraz
+              osoby, którą dziś świętujemy.
+            </p>
+          </div>
+
+          <div className="grid gap-2">
+            <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
+              <MessageCircleMore className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+              <p className="text-sm leading-6 text-muted-foreground">
+                Możesz próbować odpowiedzi tyle razy, ile chcesz. Najlepsze podpowiedzi są przy
+                stole, na parkiecie i w krótkich rozmowach po drodze.
+              </p>
+            </div>
+            <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
+              <UsersRound className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <p className="text-sm leading-6 text-muted-foreground">
+                Grasz solo albo w parze. Jeśli wpiszecie to samo imię na innym telefonie, wróci ten
+                sam stan gry.
+              </p>
+            </div>
+            <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
+              <Ticket className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+              <p className="text-sm leading-6 text-muted-foreground">
+                Punkty zamieniają się w losy do finałowego losowania. Podpowiedzi pomagają, ale
+                obniżają maksymalny wynik za pytanie do 0,5 punktu.
+              </p>
+            </div>
+          </div>
+        </section>
 
         <Card className="soft-card border-white/12">
           <CardHeader>

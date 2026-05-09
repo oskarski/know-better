@@ -13,6 +13,7 @@ type QuestionCardProps = {
   question: QuestionView;
   value: string;
   busy: boolean;
+  disabled?: boolean;
   onValueChange: (value: string) => void;
   onCheck: () => void;
   onHint: () => void;
@@ -28,6 +29,7 @@ export function QuestionCard({
   question,
   value,
   busy,
+  disabled = false,
   onValueChange,
   onCheck,
   onHint,
@@ -62,7 +64,7 @@ export function QuestionCard({
             value={value}
             onChange={(event) => onValueChange(event.target.value)}
             placeholder="Wpisz odpowiedź"
-            disabled={busy || isCorrect}
+            disabled={busy || disabled || isCorrect}
             aria-label={`Odpowiedź na pytanie ${question.id}`}
           />
 
@@ -71,18 +73,18 @@ export function QuestionCard({
               data-testid={`check-${question.id}`}
               type="button"
               onClick={onCheck}
-              disabled={busy || isCorrect}
+              disabled={busy || disabled || isCorrect}
               className="min-w-0"
             >
               {busy ? <Loader2 className="animate-spin" /> : isCorrect ? <Check /> : <Check />}
-              {isCorrect ? "Zaliczone" : "Sprawdź"}
+              {disabled && !isCorrect ? "Zamknięte" : isCorrect ? "Zaliczone" : "Sprawdź"}
             </Button>
             <Button
               data-testid={`hint-${question.id}`}
               type="button"
               variant="outline"
               onClick={onHint}
-              disabled={busy || (isCorrect && !question.hintUsed) || question.hintUsed}
+              disabled={busy || disabled || (isCorrect && !question.hintUsed) || question.hintUsed}
               className="min-w-0"
             >
               {question.hintUsed ? <Lightbulb /> : isCorrect ? <X /> : <Lightbulb />}

@@ -19,6 +19,13 @@ export type QuestionView = PublicQuestion & {
   savedAnswer: string;
 };
 
+export type GameStatus = "open" | "closed";
+
+export type GameStatusView = {
+  status: GameStatus;
+  closedAt?: string;
+};
+
 export type PlayerView = {
   id: string;
   username: string;
@@ -32,6 +39,7 @@ export type GameSnapshot = {
   progressPercent: number;
   correctCount: number;
   totalQuestions: number;
+  gameStatus: GameStatusView;
 };
 
 export type AdminPlayerView = {
@@ -47,6 +55,29 @@ export type AdminPlayerView = {
   totalQuestions: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type DrawWinnerView = {
+  place: number;
+  playerId: string;
+  username: string;
+  score: number;
+  lotteryTickets: number;
+  drawnAt: string;
+};
+
+export type AdminGameState = GameStatusView & {
+  winners: DrawWinnerView[];
+  maxWinners: number;
+  totalTickets: number;
+  remainingTickets: number;
+  eligiblePlayerCount: number;
+  canDraw: boolean;
+};
+
+export type AdminDashboard = {
+  players: AdminPlayerView[];
+  gameState: AdminGameState;
 };
 
 export type GameActionResult =

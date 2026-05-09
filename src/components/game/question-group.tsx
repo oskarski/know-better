@@ -9,6 +9,7 @@ type QuestionGroupProps = {
   questions: QuestionView[];
   values: Record<number, string>;
   busyQuestionId: number | null;
+  disabled?: boolean;
   onValueChange: (questionId: number, value: string) => void;
   onCheck: (questionId: number) => void;
   onHint: (questionId: number) => void;
@@ -37,6 +38,7 @@ export function QuestionGroup({
   questions,
   values,
   busyQuestionId,
+  disabled = false,
   onValueChange,
   onCheck,
   onHint,
@@ -62,6 +64,7 @@ export function QuestionGroup({
             question={question}
             value={values[question.id] ?? ""}
             busy={busyQuestionId === question.id}
+            disabled={disabled}
             onValueChange={(value) => onValueChange(question.id, value)}
             onCheck={() => onCheck(question.id)}
             onHint={() => onHint(question.id)}

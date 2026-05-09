@@ -1,6 +1,6 @@
 "use client";
 
-import { HelpCircle, Medal, Sparkles, Ticket } from "lucide-react";
+import { HelpCircle, Medal, Repeat2, Sparkles, Ticket, UsersRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,9 +19,14 @@ const rules = [
     text: "Rozmawiaj z gośćmi i odkrywaj fakty o solenizancie. Gra działa w tle przez całą imprezę.",
   },
   {
-    icon: HelpCircle,
+    icon: UsersRound,
+    title: "Solo albo w parze",
+    text: "Możesz grać samodzielnie albo połączyć siły z drugą osobą. Liczy się dobra rozmowa i wspólne tropienie odpowiedzi.",
+  },
+  {
+    icon: Repeat2,
     title: "Odpowiedzi",
-    text: "Wpisz odpowiedź i kliknij „Sprawdź”. Wynik zapisuje się automatycznie.",
+    text: "Wpisz odpowiedź i kliknij „Sprawdź”. Możesz próbować dowolną liczbę razy, a wynik zapisuje się automatycznie.",
   },
   {
     icon: Medal,

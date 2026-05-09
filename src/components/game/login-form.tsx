@@ -49,7 +49,8 @@ export function LoginForm() {
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               KnowBetter to luźna gra imprezowa, która dzieje się między rozmowami. Celem jest
               poznanie innych gości i przy okazji mnie: przez historie, wspomnienia i drobne tropy,
-              które pojawiają się w trakcie imprezy.
+              które pojawiają się w trakcie imprezy. Na koniec gry odbędzie się losowanie, w
+              którym wybrani zostaną 3 zwycięzcy i pojawią się nagrody.
             </p>
           </div>
 
@@ -71,8 +72,9 @@ export function LoginForm() {
             <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
               <Ticket className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
               <p className="text-sm leading-6 text-muted-foreground">
-                Punkty zamieniają się w losy do finałowego losowania. Podpowiedzi pomagają, ale
-                obniżają maksymalny wynik za pytanie do 0,75 punktu.
+                Punkty zamieniają się w losy do finałowego losowania. Na końcu wybierzemy 3
+                zwycięzców, a do zdobycia będą nagrody. Podpowiedzi pomagają, ale obniżają
+                maksymalny wynik za pytanie do 0,75 punktu.
               </p>
             </div>
           </div>

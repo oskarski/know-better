@@ -16,7 +16,7 @@ const rules = [
   {
     icon: Sparkles,
     title: "O co chodzi?",
-    text: "Celem gry jest poznanie innych gości i przy okazji mnie. Rozmawiaj, słuchaj historii i odkrywaj fakty bez robienia z tego quizu przy stole.",
+    text: "Celem gry jest poznanie innych gości i przy okazji mnie. Rozmawiaj, słuchaj historii i odkrywaj fakty bez robienia z tego quizu przy stole. Na koniec gry odbędzie się losowanie z 3 zwycięzcami i nagrodami.",
   },
   {
     icon: UsersRound,
@@ -41,7 +41,7 @@ const rules = [
   {
     icon: Ticket,
     title: "Losy",
-    text: "10 punktów daje 1 los, 14 punktów daje 2 losy, a 18 punktów daje 3 losy.",
+    text: "10 punktów daje 1 los, 14 punktów daje 2 losy, a 18 punktów daje 3 losy. To właśnie z tych losów na końcu wybierzemy 3 zwycięzców.",
   },
 ];
 

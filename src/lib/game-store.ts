@@ -14,6 +14,7 @@ import type {
   DrawWinnerView,
   GameSnapshot,
   GameStatus,
+  LotteryPoolEntryView,
   QuestionStatus,
   QuestionView,
 } from "@/lib/types";
@@ -40,6 +41,7 @@ type StoredGameMeta = {
   status: GameStatus;
   closedAt?: string;
   winners: DrawWinnerView[];
+  lotteryPool: LotteryPoolEntryView[];
   updatedAt: string;
 };
 
@@ -245,6 +247,7 @@ function defaultGameMeta(): StoredGameMeta {
   return {
     status: "open",
     winners: [],
+    lotteryPool: [],
     updatedAt: now(),
   };
 }
@@ -254,6 +257,7 @@ function normalizeMeta(meta?: Partial<StoredGameMeta>): StoredGameMeta {
     status: meta?.status === "closed" ? "closed" : "open",
     closedAt: meta?.closedAt,
     winners: Array.isArray(meta?.winners) ? meta.winners : [],
+    lotteryPool: Array.isArray(meta?.lotteryPool) ? meta.lotteryPool : [],
     updatedAt: meta?.updatedAt ?? now(),
   };
 }
@@ -480,18 +484,39 @@ function removePlayerFromWinners(meta: StoredGameMeta, playerId: string) {
   meta.updatedAt = now();
 }
 
+function removePlayerFromLotteryPool(meta: StoredGameMeta, playerId: string) {
+  meta.lotteryPool = meta.lotteryPool.filter((player) => player.playerId !== playerId);
+  meta.updatedAt = now();
+}
+
+function makeLotteryPoolEntry(player: AdminPlayerView): LotteryPoolEntryView {
+  return {
+    playerId: player.id,
+    username: player.username,
+    score: player.score,
+    lotteryTickets: player.lotteryTickets,
+  };
+}
+
+function makeCurrentLotteryPool(players: AdminPlayerView[]) {
+  return players
+    .filter((player) => player.lotteryTickets > 0)
+    .map(makeLotteryPoolEntry);
+}
+
 function makeAdminGameState(meta: StoredGameMeta, players: AdminPlayerView[]): AdminGameState {
   const winnerIds = new Set(meta.winners.map((winner) => winner.playerId));
-  const eligiblePlayers = players.filter(
-    (player) => player.lotteryTickets > 0 && !winnerIds.has(player.id),
-  );
+  const lotteryPool =
+    meta.status === "closed" ? meta.lotteryPool : makeCurrentLotteryPool(players);
+  const eligiblePlayers = lotteryPool.filter((player) => !winnerIds.has(player.playerId));
 
   return {
     status: meta.status,
     closedAt: meta.closedAt,
     winners: meta.winners,
+    lotteryPool,
     maxWinners,
-    totalTickets: players.reduce((sum, player) => sum + player.lotteryTickets, 0),
+    totalTickets: lotteryPool.reduce((sum, player) => sum + player.lotteryTickets, 0),
     remainingTickets: eligiblePlayers.reduce((sum, player) => sum + player.lotteryTickets, 0),
     eligiblePlayerCount: eligiblePlayers.length,
     canDraw:
@@ -522,7 +547,7 @@ function closeMeta(meta: StoredGameMeta) {
   return meta;
 }
 
-function chooseNextWinner(meta: StoredGameMeta, players: AdminPlayerView[]) {
+function chooseNextWinner(meta: StoredGameMeta) {
   if (meta.status !== "closed") {
     throw new Error("Najpierw zamknij grę.");
   }
@@ -532,9 +557,7 @@ function chooseNextWinner(meta: StoredGameMeta, players: AdminPlayerView[]) {
   }
 
   const winnerIds = new Set(meta.winners.map((winner) => winner.playerId));
-  const eligiblePlayers = players.filter(
-    (player) => player.lotteryTickets > 0 && !winnerIds.has(player.id),
-  );
+  const eligiblePlayers = meta.lotteryPool.filter((player) => !winnerIds.has(player.playerId));
   const totalTickets = eligiblePlayers.reduce((sum, player) => sum + player.lotteryTickets, 0);
 
   if (totalTickets === 0) {
@@ -550,7 +573,7 @@ function chooseNextWinner(meta: StoredGameMeta, players: AdminPlayerView[]) {
 
   const winner: DrawWinnerView = {
     place: meta.winners.length + 1,
-    playerId: selectedPlayer.id,
+    playerId: selectedPlayer.playerId,
     username: selectedPlayer.username,
     score: selectedPlayer.score,
     lotteryTickets: selectedPlayer.lotteryTickets,
@@ -715,21 +738,35 @@ async function redisDeletePlayerState(playerId: string) {
   }
 
   removePlayerFromWinners(meta, playerId);
+  removePlayerFromLotteryPool(meta, playerId);
 
   await Promise.all([redisDeletePlayer(playerId), redisSaveMeta(meta)]);
 }
 
 async function redisCloseGame() {
-  const meta = await redisGetMeta();
+  const [players, meta, keys] = await Promise.all([
+    redisGetAllPlayers(),
+    redisGetMeta(),
+    redisPlayerKeys(),
+  ]);
+
+  meta.winners = [];
+  meta.lotteryPool = makeCurrentLotteryPool(
+    sortAdminPlayers(uniquePlayersByName(players).map(makeAdminPlayerView)),
+  );
   closeMeta(meta);
-  await redisSaveMeta(meta);
+
+  await Promise.all([
+    redisSaveMeta(meta),
+    ...(keys.length > 0 ? [redisCommand<number>(["DEL", ...keys])] : []),
+  ]);
+
   return meta;
 }
 
 async function redisDrawNextWinner() {
-  const [players, meta] = await Promise.all([redisGetAllPlayers(), redisGetMeta()]);
-  const adminPlayers = sortAdminPlayers(uniquePlayersByName(players).map(makeAdminPlayerView));
-  const winner = chooseNextWinner(meta, adminPlayers);
+  const meta = await redisGetMeta();
+  const winner = chooseNextWinner(meta);
 
   await redisSaveMeta(meta);
   return winner;
@@ -911,6 +948,7 @@ export async function deletePlayerState(playerId: string) {
     for (const matchingPlayer of playersWithSameName(store, player.username)) {
       delete store.players[matchingPlayer.id];
       removePlayerFromWinners(meta, matchingPlayer.id);
+      removePlayerFromLotteryPool(meta, matchingPlayer.id);
     }
   });
 }
@@ -922,6 +960,15 @@ export async function closeGame() {
 
   return updateStore((store) => {
     const meta = ensureMeta(store);
+    meta.winners = [];
+    meta.lotteryPool = makeCurrentLotteryPool(
+      sortAdminPlayers(uniquePlayersByName(Object.values(store.players)).map(makeAdminPlayerView)),
+    );
+
+    for (const playerId of Object.keys(store.players)) {
+      delete store.players[playerId];
+    }
+
     return closeMeta(meta);
   });
 }
@@ -933,15 +980,6 @@ export async function drawNextWinner() {
 
   return updateStore((store) => {
     const meta = ensureMeta(store);
-
-    for (const player of Object.values(store.players)) {
-      syncPlayersWithSameName(store, player.username);
-    }
-
-    const players = sortAdminPlayers(
-      uniquePlayersByName(Object.values(store.players)).map(makeAdminPlayerView),
-    );
-
-    return chooseNextWinner(meta, players);
+    return chooseNextWinner(meta);
   });
 }

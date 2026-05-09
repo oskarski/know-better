@@ -6,15 +6,12 @@ import { logoutAction } from "@/app/actions";
 import { GameRulesDialog } from "@/components/game/game-rules-dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { formatScore } from "@/lib/formatting";
 import type { GameSnapshot } from "@/lib/types";
 
 type StatsPanelProps = {
   game: GameSnapshot;
 };
-
-function formatScore(score: number) {
-  return Number.isInteger(score) ? score.toString() : score.toFixed(1).replace(".", ",");
-}
 
 export function StatsPanel({ game }: StatsPanelProps) {
   return (

@@ -136,7 +136,7 @@ export async function closeGameAction(): Promise<AdminMutationResult> {
 
     return {
       ok: true,
-      message: "Gra została zamknięta. Możesz rozpocząć losowanie.",
+      message: "Gra została zamknięta, gracze zostali wyczyszczeni, a pula losów jest gotowa do losowania.",
     };
   } catch (error) {
     return {

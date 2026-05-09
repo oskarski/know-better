@@ -66,8 +66,16 @@ export type DrawWinnerView = {
   drawnAt: string;
 };
 
+export type LotteryPoolEntryView = {
+  playerId: string;
+  username: string;
+  score: number;
+  lotteryTickets: number;
+};
+
 export type AdminGameState = GameStatusView & {
   winners: DrawWinnerView[];
+  lotteryPool: LotteryPoolEntryView[];
   maxWinners: number;
   totalTickets: number;
   remainingTickets: number;

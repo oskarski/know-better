@@ -1,44 +1,57 @@
 # KnowBetter
 
-Mobilna gra imprezowa w Next.js.
+A mobile-first birthday party social discovery game built with Next.js.
 
-## Idea gry
+## What the game is about
 
-Celem KnowBetter jest poznanie innych gości i przy okazji solenizanta. Gracze szukają odpowiedzi w rozmowach, wspomnieniach i anegdotach, najlepiej bez zadawania pytań wprost.
+KnowBetter helps guests get to know each other and the birthday person through conversation.
 
-Podpowiedź zapisuje się na stałe i obniża punktację za dane pytanie o 0,25 punktu.
+Players uncover answers by talking, listening to stories, and connecting clues during the party. The goal is to open conversations, not to quiz people directly.
 
-## Dane gry
+Players can try each answer as many times as they want.
 
-Lokalnie aplikacja zapisuje stan w `data/game-state.json`.
+Using a hint is permanent and lowers the maximum score for that question from `1` point to `0.75` point.
 
-Na Vercel aplikacja wymaga trwałego Redis REST storage. Najprostsza konfiguracja:
+## Data storage
 
-1. Dodaj bazę Upstash Redis w Vercel Marketplace.
-2. Ustaw zmienne środowiskowe:
+During local development, the app stores state in `data/game-state.json`.
+
+On Vercel, the app requires durable Redis REST storage. Recommended setup:
+
+1. Add Upstash Redis from the Vercel Marketplace.
+2. Configure:
    - `UPSTASH_REDIS_REST_URL`
    - `UPSTASH_REDIS_REST_TOKEN`
-3. Zdeployuj aplikację.
+3. Deploy the app.
 
-Po ustawieniu Redis dane graczy są zapisywane pod kluczami `knowbetter:player:<imię>` i przetrwają restarty funkcji oraz nowe releasy. Zmienna `KNOWBETTER_STORAGE_PREFIX` pozwala rozdzielić środowiska, np. `knowbetter-prod` i `knowbetter-preview`.
+With Redis configured, player data is stored under keys like `knowbetter:player:<normalized-name>` and survives function restarts and new releases.
 
-Bez Redis na Vercel aplikacja celowo zgłosi błąd, żeby nie udawać trwałego zapisu na nietrwałym filesystemie.
+`KNOWBETTER_STORAGE_PREFIX` can be used to separate environments such as production and preview.
 
-## Panel admina
+Without Redis on Vercel, the app intentionally throws an error instead of pretending the deployment filesystem is persistent.
 
-Panel jest dostępny pod `/admin`.
+## Admin panel
 
-Domyślne dane logowania:
+The admin panel is available at `/admin`.
 
-- login: `admin`
-- hasło: `admin30`
+Default credentials:
 
-Opcjonalnie można je nadpisać zmiennymi:
+- username: `admin`
+- password: `admin30`
+
+Optional environment overrides:
 
 - `ADMIN_USERNAME`
 - `ADMIN_PASSWORD`
 - `ADMIN_SESSION_SECRET`
 
-Panel pokazuje graczy posortowanych po postępie i pozwala wyczyścić zapisane odpowiedzi dla jednej osoby, usunąć gracza albo wyczyścić stan wszystkich graczy naraz.
+The admin panel lets you:
 
-Po zakończeniu zbierania odpowiedzi admin może zamknąć grę. Zamknięta gra nie przyjmuje już nowych odpowiedzi ani podpowiedzi. Panel pozwala potem losować maksymalnie 3 zwycięzców po kolei, na bazie liczby losów zdobytych przez graczy.
+- review players sorted by progress
+- clear one player's progress
+- delete a player
+- clear the entire game state
+- close the game
+- draw up to 3 winners, one by one, based on their lottery tickets
+
+When the game is closed, active player records are cleared and the lottery pool is frozen for the final draw.

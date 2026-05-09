@@ -2,7 +2,13 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { ArrowRight, MessageCircleMore, Sparkles, Ticket, UsersRound } from "lucide-react";
+import {
+  ArrowRight,
+  MessageCircleMore,
+  Sparkles,
+  Ticket,
+  UsersRound,
+} from "lucide-react";
 
 import { loginAction, type LoginState } from "@/app/actions";
 import { Button } from "@/components/ui/button";
@@ -33,8 +39,12 @@ export function LoginForm() {
             <UsersRound className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">Gra urodzinowa</p>
-            <h1 className="text-2xl font-bold tracking-normal text-foreground">KnowBetter</h1>
+            <p className="text-sm font-medium text-muted-foreground">
+              Gra urodzinowa
+            </p>
+            <h1 className="text-2xl font-bold tracking-normal text-foreground">
+              KnowBetter
+            </h1>
           </div>
         </div>
 
@@ -47,34 +57,52 @@ export function LoginForm() {
               Popytaj ludzi. Odkryj historie. Zgarnij losy.
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              KnowBetter to luźna gra imprezowa, która dzieje się między rozmowami. Celem jest
-              poznanie innych gości i przy okazji mnie: przez historie, wspomnienia i drobne tropy,
-              które pojawiają się w trakcie imprezy. Na koniec gry odbędzie się losowanie, w
-              którym wybrani zostaną 3 zwycięzcy i pojawią się nagrody.
+              KnowBetter to luźna gra imprezowa, która dzieje się między
+              rozmowami. Celem jest poznanie innych gości i przy okazji mnie:
+              przez historie, wspomnienia i drobne tropy, które pojawiają się w
+              trakcie imprezy. Na koniec gry odbędzie się losowanie, w którym
+              wylosujemy 3 zwycięzców i pojawią się nagrody.
             </p>
           </div>
 
           <div className="grid gap-2">
+            <div className="rounded-md border border-primary/25 bg-primary/10 p-3">
+              <div className="flex gap-3">
+                <MessageCircleMore className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                    Najważniejsze
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-foreground/90">
+                    To nie ma być quizowanie się nawzajem. Celem gry jest
+                    poznanie się, otwieranie rozmów i wyciąganie historii bez
+                    zadawania pytań wprost.
+                  </p>
+                </div>
+              </div>
+            </div>
             <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
               <MessageCircleMore className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
               <p className="text-sm leading-6 text-muted-foreground">
-                Możesz próbować odpowiedzi tyle razy, ile chcesz. Staraj się jednak nie pytać
-                wprost. Lepiej wyciągnąć informację z rozmowy, anegdoty albo wspólnego wspomnienia.
+                Możesz próbować odpowiedzi tyle razy, ile chcesz. Zamiast
+                wypytywać wprost, spróbuj dojść do odpowiedzi przez anegdotę,
+                wspomnienie albo luźny trop z rozmowy.
               </p>
             </div>
             <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
               <UsersRound className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <p className="text-sm leading-6 text-muted-foreground">
-                Grasz solo albo w parze. Jeśli wpiszecie to samo imię na innym telefonie, wróci ten
-                sam stan gry.
+                Grasz solo albo w parze. Jeśli wpiszecie to samo imię na innym
+                telefonie, wróci ten sam stan gry.
               </p>
             </div>
             <div className="flex gap-3 rounded-md border border-white/10 bg-background/35 p-3">
               <Ticket className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
               <p className="text-sm leading-6 text-muted-foreground">
-                Punkty zamieniają się w losy do finałowego losowania. Na końcu wybierzemy 3
-                zwycięzców, a do zdobycia będą nagrody. Podpowiedzi pomagają, ale obniżają
-                maksymalny wynik za pytanie do 0,75 punktu.
+                Punkty zamieniają się w losy do finałowego losowania. Na końcu
+                wylosujemy 3 zwycięzców, a do zdobycia będą nagrody. Podpowiedzi
+                pomagają, ale obniżają maksymalny wynik za pytanie do 0,75
+                punktu.
               </p>
             </div>
           </div>
@@ -84,21 +112,24 @@ export function LoginForm() {
           <CardHeader>
             <div className="mb-3 inline-flex w-fit items-center gap-2 rounded-md border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
               <Sparkles className="h-3.5 w-3.5" />
-              Start bez konta, stan wraca po imieniu
+              Rozmowy zamiast quizu
             </div>
-            <CardTitle className="text-2xl">Jak masz na imię?</CardTitle>
+            <CardTitle className="text-2xl">Jak masz / macie na imię ?</CardTitle>
           </CardHeader>
           <CardContent>
             <form action={formAction} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="username" className="text-sm font-medium text-muted-foreground">
+                <label
+                  htmlFor="username"
+                  className="text-sm font-medium text-muted-foreground"
+                >
                   Imię
                 </label>
                 <Input
                   id="username"
                   name="username"
                   autoComplete="given-name"
-                  placeholder="np. Kasia"
+                  placeholder="np. Kasia i Tomek"
                   maxLength={32}
                   required
                 />

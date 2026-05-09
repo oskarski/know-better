@@ -30,7 +30,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import type { AdminGameState, AdminPlayerView, DrawWinnerView } from "@/lib/types";
+import { formatScore } from "@/lib/formatting";
+import type {
+  AdminGameState,
+  AdminPlayerView,
+  DrawWinnerView,
+  LotteryPoolEntryView,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type AdminPanelProps = {
@@ -39,10 +45,6 @@ type AdminPanelProps = {
 };
 
 type DrawPhase = "idle" | "rolling" | "revealed";
-
-function formatScore(score: number) {
-  return Number.isInteger(score) ? score.toString() : score.toFixed(1).replace(".", ",");
-}
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat("pl-PL", {
@@ -59,11 +61,11 @@ function wait(milliseconds: number) {
   });
 }
 
-function buildDrawPool(players: AdminPlayerView[], winners: DrawWinnerView[]) {
+function buildDrawPool(lotteryPool: LotteryPoolEntryView[], winners: DrawWinnerView[]) {
   const winnerIds = new Set(winners.map((winner) => winner.playerId));
 
-  return players.flatMap((player) =>
-    winnerIds.has(player.id)
+  return lotteryPool.flatMap((player) =>
+    winnerIds.has(player.playerId)
       ? []
       : Array.from({ length: player.lotteryTickets }, () => player.username),
   );
@@ -128,11 +130,24 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
   const drawIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [, startTransition] = useTransition();
   const isBusy = pendingTarget !== null;
-  const topScore = players[0]?.score ?? 0;
-  const totalTickets = players.reduce((sum, player) => sum + player.lotteryTickets, 0);
+  const hasAnyState =
+    players.length > 0 ||
+    gameState.lotteryPool.length > 0 ||
+    gameState.winners.length > 0 ||
+    gameState.status === "closed";
+  const topScore =
+    players[0]?.score ?? Math.max(0, ...gameState.lotteryPool.map((player) => player.score));
+  const totalTickets = gameState.totalTickets;
   const averageProgress =
     players.length > 0
       ? Math.round(players.reduce((sum, player) => sum + player.progressPercent, 0) / players.length)
+      : gameState.lotteryPool.length > 0
+        ? Math.round(
+            gameState.lotteryPool.reduce(
+              (sum, player) => sum + Math.min(100, Math.round((player.score / 18) * 100)),
+              0,
+            ) / gameState.lotteryPool.length,
+          )
       : 0;
   const visibleWinners =
     revealedWinner && !gameState.winners.some((winner) => winner.playerId === revealedWinner.playerId)
@@ -229,7 +244,7 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
   function closeGame() {
     if (
       !window.confirm(
-        "Zamknąć grę? Gracze nie będą już mogli sprawdzać odpowiedzi ani używać podpowiedzi.",
+        "Zamknąć grę i wyczyścić wszystkich graczy? Zachowamy tylko pulę losów do finałowego losowania.",
       )
     ) {
       return;
@@ -239,7 +254,7 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
   }
 
   async function drawNextWinner() {
-    const pool = buildDrawPool(players, visibleWinners);
+    const pool = buildDrawPool(gameState.lotteryPool, visibleWinners);
 
     if (pool.length === 0) {
       toast.info("Nie ma już losów do wylosowania.");
@@ -293,7 +308,7 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
                 variant="destructive"
                 size="icon"
                 aria-label="Wyczyść wszystkich"
-                disabled={players.length === 0 || isBusy}
+                disabled={!hasAnyState || isBusy}
                 onClick={clearAllPlayers}
               >
                 <Trash2 />
@@ -348,8 +363,8 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
                 </Badge>
               </div>
               <p className="text-sm leading-6 text-muted-foreground">
-                Zamknij grę, gdy kończycie zbieranie odpowiedzi. Potem losuj zwycięzców po jednym,
-                na bazie zapisanych losów.
+                Zamknij grę, gdy kończycie zbieranie odpowiedzi. Potem wylosuj zwycięzców po
+                jednym, na bazie zapisanych losów.
               </p>
             </div>
 
@@ -448,10 +463,22 @@ export function AdminPanel({ players, gameState }: AdminPanelProps) {
 
         {players.length === 0 ? (
           <div className="rounded-lg border border-white/10 bg-white/5 p-5 text-center">
-            <p className="font-semibold">Nie ma jeszcze graczy.</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Lista pojawi się, gdy ktoś pierwszy raz wejdzie do gry.
-            </p>
+            {gameState.status === "closed" ? (
+              <>
+                <p className="font-semibold">Gra została zamknięta.</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Aktywna lista graczy została wyczyszczona. Finałowe losowanie
+                  korzysta teraz z zapisanej puli losów.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-semibold">Nie ma jeszcze graczy.</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Lista pojawi się, gdy ktoś pierwszy raz wejdzie do gry.
+                </p>
+              </>
+            )}
           </div>
         ) : null}
 

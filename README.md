@@ -1,5 +1,9 @@
 # KnowBetter
 
+> This app was fully vibe-coded. I did not write or read a single line of code myself.
+>
+> Live preview: [https://know-better-jet.vercel.app/](https://know-better-jet.vercel.app/)
+
 A mobile-first birthday party social discovery game built with Next.js.
 
 ## What the game is about

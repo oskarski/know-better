@@ -2,141 +2,141 @@
   {
     "id": 1,
     "difficulty": "easy",
-    "question": "Jakie zwierzę najczęściej pojawia się w bajkach dla dzieci?",
-    "answer": "kot",
-    "hint": "To domowy klasyk z wąsami."
+    "question": "Jaki mam tytuł naukowy?",
+    "answer": "inżynier",
+    "hint": "Pogadaj z osobą, która nie mieszka w Polsce - świętowała razem ze mną po tym, jak zdałem egzamin."
   },
   {
     "id": 2,
     "difficulty": "easy",
-    "question": "Jaki kolor ma bezchmurne niebo w słoneczny dzień?",
-    "answer": "niebieski",
-    "hint": "Taki sam kolor ma wiele dżinsowych kurtek."
+    "question": "W jakim mieście nauczyłem się robić makaron?",
+    "answer": "rzym",
+    "hint": "Pogadaj z kimś kto jadł meatballe mojej roboty."
   },
   {
     "id": 3,
     "difficulty": "easy",
-    "question": "Ile dni ma tydzień?",
-    "answer": "7",
-    "hint": "To więcej niż pięć, mniej niż osiem."
+    "question": "Jakie jest moje ulubione miejsce w Europie?",
+    "answer": "madera",
+    "hint": "Słuchaj mnie uważnie o 21:30."
   },
   {
     "id": 4,
-    "difficulty": "easy",
-    "question": "W jakim miesiącu zwykle obchodzimy Boże Narodzenie?",
-    "answer": "grudzien",
-    "hint": "To ostatni miesiąc roku."
+    "difficulty": "hard",
+    "question": "Na jaką górę najbardziej chcę wejść?",
+    "answer": "kilimandzaro",
+    "hint": "Zagdaj do osoby, z którą odbyłem najwięcej podróży zagranicznych."
   },
   {
     "id": 5,
-    "difficulty": "easy",
-    "question": "Jak nazywa się napój robiony z mielonych ziaren, często pity rano?",
-    "answer": "kawa",
-    "hint": "Dla wielu osób to obowiązkowy start dnia."
+    "difficulty": "hard",
+    "question": "Za kogo przebrałem się na „magicznego” Sylwestra?",
+    "answer": "aladyn",
+    "hint": "Znajdź osoby, które wciągały gaz rozweselający."
   },
   {
     "id": 6,
-    "difficulty": "medium",
-    "question": "Jak nazywa się stolica Hiszpanii?",
-    "answer": "madryt",
-    "hint": "To nie Barcelona."
+    "difficulty": "hard",
+    "question": "Co przywiozłem specjalnie dla Basi z Cypru?",
+    "answer": "halloumi",
+    "hint": "Podpytaj osoby, które mnie woziły w wózku sklepowym po Larnace."
   },
   {
     "id": 7,
     "difficulty": "medium",
-    "question": "Jak nazywa się urządzenie, które pokazuje godzinę na ręce?",
-    "answer": "zegarek",
-    "hint": "Może być klasyczne albo smart."
+    "question": "Co piłem, jadąc pociągiem poznać Krysię?",
+    "answer": "cuba libre",
+    "hint": "Przygotowania udokumentowałem na Instagramie."
   },
   {
     "id": 8,
     "difficulty": "medium",
-    "question": "Jak nazywa się największy ocean na Ziemi?",
-    "answer": "spokojny",
-    "hint": "Po angielsku to Pacific."
+    "question": "Jak nazywała się moja pierwsza żona?",
+    "answer": "julianna",
+    "hint": "Mój obozowy ślub miał miejsce na obozie harcerskim 2015."
   },
   {
     "id": 9,
-    "difficulty": "medium",
-    "question": "Jak nazywa się dyscyplina, w której gra się rakietą i piłką przez siatkę?",
-    "answer": "tenis",
-    "hint": "Wielkie turnieje to między innymi Wimbledon i Roland Garros."
+    "difficulty": "easy",
+    "question": "Jaki numer miała moja drużyna harcerska?",
+    "answer": "60",
+    "hint": "Zagadaj do kogoś z kim byłem na Babiej Górze."
   },
   {
     "id": 10,
     "difficulty": "medium",
-    "question": "Jak nazywa się planeta, na której żyjemy?",
-    "answer": "ziemia",
-    "hint": "Trzecia od Słońca."
+    "question": "Jakim samochodem jeździłem jako dostawca? (pełna nazwa)",
+    "answer": "volkswagen transporter t4",
+    "hint": "Pogadaj z kimś kto zna znaczenie akronimu UFO."
   },
   {
     "id": 11,
-    "difficulty": "medium",
-    "question": "Jak nazywa się pora roku po lecie?",
-    "answer": "jesien",
-    "hint": "Liście robią się wtedy żółte i czerwone."
+    "difficulty": "easy",
+    "question": "Dokąd wyprowadziłem się z Warszawy na rok?",
+    "answer": "wroclaw",
+    "hint": "Zagadaj do osoby z którą zwiedzałem Hagia Sophie."
   },
   {
     "id": 12,
     "difficulty": "medium",
-    "question": "Jak nazywa się naczynie, z którego najczęściej je się zupę?",
-    "answer": "miska",
-    "hint": "Nie kubek i nie talerz płaski."
+    "question": "Jakie było największe jajko, którego próbowałem?",
+    "answer": "strusie",
+    "hint": "Pogadaj z kimś, kto uwielbia próbować nowych potraw i smaków."
   },
   {
     "id": 13,
     "difficulty": "medium",
-    "question": "Jak nazywa się popularny serwis do oglądania filmów i seriali zaczynający się na N?",
-    "answer": "netflix",
-    "hint": "Czerwone logo, dużo seriali."
+    "question": "Co znalazłem na koszu do koszykówki po mojej 18-tce w Raszynie?",
+    "answer": "spodnie",
+    "hint": "Zagadaj do osoby z którą odwiedziłem Karlskrone."
   },
   {
     "id": 14,
     "difficulty": "medium",
-    "question": "Jak nazywa się instrument z klawiszami, często spotykany w salonie muzycznym?",
-    "answer": "pianino",
-    "hint": "Większa koncertowa wersja to fortepian."
+    "question": "Kogo niespodziewanie spotkałem na Cyprze?",
+    "answer": "wojtek",
+    "hint": "Żona tej osoby uwielbia Dawida Podsiadło."
   },
   {
     "id": 15,
     "difficulty": "medium",
-    "question": "Jak nazywa się owoc, z którego często robi się guacamole?",
-    "answer": "awokado",
-    "hint": "Ma dużą pestkę i zielony miąższ."
+    "question": "Jakie danie zjadłem na spółkę z Mateuszem w Józefowie?",
+    "answer": "kebab",
+    "hint": "Ten Mateusz jest żeglarzem."
   },
   {
     "id": 16,
     "difficulty": "hard",
-    "question": "Jak nazywa się pierwiastek chemiczny oznaczany symbolem Fe?",
-    "answer": "zelazo",
-    "hint": "To metal bardzo ważny w budownictwie i przemyśle."
+    "question": "Jak nazywa się firma, gdzie zdobyłem pierwszą pracę jako programista?",
+    "answer": "valueadd",
+    "hint": "Zagadaj do osoby z wąsem."
   },
   {
     "id": 17,
     "difficulty": "hard",
-    "question": "Jak nazywa się autor powieści „Lalka”?",
-    "answer": "boleslaw prus",
-    "hint": "Nazwisko to pseudonim literacki Aleksandra Głowackiego."
+    "question": "Jak nazywa się moja firma? (krótsza nazwa)",
+    "answer": "przedni development",
+    "hint": "Jako FrontEnd developer polecam zagadać do mojej ulubionej HR managerki - może pomimo RODO zdradzi Ci ten sekret :D"
   },
   {
     "id": 18,
     "difficulty": "hard",
-    "question": "Jak nazywa się proces, w którym rośliny wytwarzają pokarm z udziałem światła?",
-    "answer": "fotosynteza",
-    "hint": "Dzięki temu procesowi powstaje też tlen."
+    "question": "Jak nazywał się mój ulubiony drink autorstwa osoby, z którą często gotowałem?",
+    "answer": "rozpacz ksiegowego",
+    "hint": "Porozmawiaj z osobą, która zawodowo zajmuje się księgowością."
   },
   {
     "id": 19,
     "difficulty": "hard",
-    "question": "Jak nazywa się liczba, która jest wynikiem mnożenia wszystkich dodatnich liczb całkowitych od 1 do n?",
-    "answer": "silnia",
-    "hint": "W matematyce zapisuje się ją wykrzyknikiem."
+    "question": "Kto zabrał mnie pierwszy raz na siłownię? (imię)",
+    "answer": "zuzia",
+    "hint": "Znajdź osobę wege na imprezie."
   },
   {
     "id": 20,
     "difficulty": "hard",
-    "question": "Jak nazywa się styl pływacki, w którym obie ręce poruszają się jednocześnie nad wodą?",
-    "answer": "motylek",
-    "hint": "To najbardziej widowiskowy styl pływacki."
+    "question": "Który szlak górski w Polsce próbowałem przejść, ale mi się nie udało?",
+    "answer": "orla perć",
+    "hint": "Pogadaj z fanem negroni, któremu się to udało!"
   }
 ]
